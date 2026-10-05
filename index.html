@@ -94,6 +94,35 @@
   .col:nth-child(4) > .year .tip { justify-content: flex-end; }
 
 
+  /* building-blocks slide: builds up one layer per click */
+  .slide.blocks { padding-top: clamp(24px, 5.5vh, 56px); }
+  .blocks .inner { min-height: 100%; grid-template-rows: auto 1fr auto; }
+  .blocks .stage { display: grid; gap: 12px; align-content: center; }
+  .band { display: grid; gap: 8px; }
+  .band > h3 { margin: 0; padding-bottom: 3px; border-bottom: 2px solid var(--accent); font-size: clamp(16px, 1.5vw, 21px); }
+  .band > h3 small { font-weight: 500; color: var(--muted); font-size: .72em; margin-left: .5em; }
+  .wf { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .item { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 8px 12px 10px;
+    display: grid; gap: 3px; align-content: start; }
+  /* workflow cards share the grid's rows (subgrid), so each text line, e.g. every "Use when", sits at the same height */
+  .wf > .item { grid-row: span 4; grid-template-rows: subgrid; row-gap: 3px; }
+  .item.row { grid-template-columns: minmax(200px, 300px) 1fr; align-items: center; column-gap: 18px; }
+  .item h4 { margin: 0; font-size: clamp(14px, 1.2vw, 17px); }
+  .item p { margin: 0; font-size: clamp(12px, .95vw, 14px); line-height: 1.35; color: var(--muted); }
+  .item p b { color: var(--ink); font-weight: 600; }
+  .item svg { width: 100%; height: auto; }
+  .item.row svg { max-width: 340px; }
+  .mb { fill: var(--card); stroke: var(--accent); stroke-width: 1.6; }
+  .mb.g { stroke: var(--muted); stroke-dasharray: 4 3; }
+  .mt { fill: var(--ink); font-size: 13px; text-anchor: middle; dominant-baseline: central; }
+  .ma { stroke: var(--accent); stroke-width: 1.8; fill: none; marker-end: url(#ah); stroke-linejoin: round; }
+  .ma.n { marker-end: none; }
+  .ma.two { marker-start: url(#ah); }
+  .ml { fill: var(--accent); font-size: 11px; font-weight: 600; text-anchor: middle; letter-spacing: .04em; }
+  .srcline { margin: 0; text-align: center; font-size: 11px; color: var(--muted); }
+  .srcline a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 2px; }
+  .srcline a:hover { color: var(--accent); }
+
   .hint { position: fixed; bottom: 52px; right: 20px; font-size: 13px; color: var(--muted); }
   .fs { position: fixed; bottom: 12px; right: 16px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px;
     background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; transition: .2s; }
@@ -118,6 +147,7 @@
     .col > * { grid-column: auto !important; grid-row: auto !important; }
     .refs ol { columns: 2; }
   }
+  @media (max-width: 1100px) { .wf { grid-template-columns: repeat(2, 1fr); } .item.row { grid-template-columns: 1fr; } }
   @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .refs ol { columns: 1; } }
   @media (prefers-reduced-motion: reduce) {
     body::before { animation: none; }
@@ -198,6 +228,39 @@
   </div>
 </section>
 
+<section class="slide blocks">
+  <div class="inner">
+    <h2>Building Blocks, Workflows and Agents</h2>
+    <div class="stage">
+      <div class="band">
+        <h3>Building block <small>augmented LLM</small></h3>
+        <div class="item row"><svg viewBox="0 0 300 120"><rect class="mb g" x="8" y="6" width="84" height="28" rx="7"/><text class="mt" x="50.0" y="20.5">Retrieval</text><rect class="mb g" x="8" y="46" width="84" height="28" rx="7"/><text class="mt" x="50.0" y="60.5">Tools</text><rect class="mb g" x="8" y="86" width="84" height="28" rx="7"/><text class="mt" x="50.0" y="100.5">Memory</text><rect class="mb" x="170" y="32" width="90" height="56" rx="7"/><text class="mt" x="215.0" y="60.5">LLM</text><path class="ma two" d="M92 20H131V44H170"/><path class="ma two" d="M92 60H170"/><path class="ma two" d="M92 100H131V76H170"/></svg>
+          <div><h4>An LLM enhanced with retrieval, tools and memory</h4>
+          <p>The model actively directs these augmentations: it generates its own search queries, picks tools and decides what to remember.</p></div></div>
+      </div>
+      <div class="band">
+        <h3>Workflows <small>LLMs and tools orchestrated through predefined code paths</small></h3>
+        <div class="wf">
+          <div class="item"><svg viewBox="0 0 240 100"><path class="ma " d="M2 50H22"/><rect class="mb" x="22" y="37" width="48" height="26" rx="7"/><text class="mt" x="46.0" y="50.5">LLM</text><path class="ma " d="M70 50H96"/><rect class="mb" x="96" y="37" width="48" height="26" rx="7"/><text class="mt" x="120.0" y="50.5">LLM</text><path class="ma " d="M144 50H170"/><rect class="mb" x="170" y="37" width="48" height="26" rx="7"/><text class="mt" x="194.0" y="50.5">LLM</text><path class="ma " d="M218 50H238"/><text class="ml" x="46" y="28">STEP 1</text><text class="ml" x="120" y="28">STEP 2</text><text class="ml" x="194" y="28">STEP 3</text></svg><h4>Prompt chaining</h4><p>A sequence of steps; each LLM call processes the previous output.</p><p><b>Use when:</b> the task splits into fixed subtasks</p></div>
+          <div class="item"><svg viewBox="0 0 240 100"><path class="ma " d="M2 50H22"/><rect class="mb" x="22" y="37" width="58" height="26" rx="7"/><text class="mt" x="51.0" y="50.5">Router</text><path class="ma " d="M80 50H104V21H132"/><path class="ma " d="M80 50H132"/><path class="ma " d="M80 50H104V79H132"/><rect class="mb" x="132" y="8" width="104" height="26" rx="7"/><text class="mt" x="184.0" y="21.5">Specialist A</text><rect class="mb" x="132" y="37" width="104" height="26" rx="7"/><text class="mt" x="184.0" y="50.5">Specialist B</text><rect class="mb" x="132" y="66" width="104" height="26" rx="7"/><text class="mt" x="184.0" y="79.5">Specialist C</text></svg><h4>Routing</h4><p>Classifies an input and sends it to a specialized follow-up task.</p><p><b>Use when:</b> there are distinct categories to handle separately</p></div>
+          <div class="item"><svg viewBox="0 0 240 100"><path class="ma n" d="M2 50H18"/><path class="ma" d="M18 50V21H50"/><path class="ma" d="M18 50H50"/><path class="ma" d="M18 50V79H50"/><rect class="mb" x="50" y="8" width="58" height="26" rx="7"/><text class="mt" x="79.0" y="21.5">LLM</text><rect class="mb" x="50" y="37" width="58" height="26" rx="7"/><text class="mt" x="79.0" y="50.5">LLM</text><rect class="mb" x="50" y="66" width="58" height="26" rx="7"/><text class="mt" x="79.0" y="79.5">LLM</text><path class="ma" d="M108 21H123V38H138"/><path class="ma" d="M108 50H138"/><path class="ma" d="M108 79H123V62H138"/><rect class="mb" x="138" y="30" width="70" height="40" rx="7"/><text class="mt" x="173.0" y="50.5">Aggregate</text><path class="ma" d="M208 50H226"/></svg><h4>Parallelization</h4><p>LLMs work at the same time; outputs are aggregated by code (sectioning or voting).</p><p><b>Use when:</b> you need speed or several perspectives</p></div>
+          <div class="item"><svg viewBox="0 0 240 100"><rect class="mb" x="66" y="6" width="108" height="26" rx="7"/><text class="mt" x="120.0" y="19.5">Orchestrator</text><path class="ma " d="M96 32V48H40V68"/><path class="ma " d="M120 32V68"/><path class="ma " d="M144 32V48H200V68"/><rect class="mb" x="8" y="68" width="64" height="26" rx="7"/><text class="mt" x="40.0" y="81.5">Worker</text><rect class="mb" x="88" y="68" width="64" height="26" rx="7"/><text class="mt" x="120.0" y="81.5">Worker</text><rect class="mb" x="168" y="68" width="64" height="26" rx="7"/><text class="mt" x="200.0" y="81.5">Worker</text></svg><h4>Orchestrator-workers</h4><p>A central LLM breaks the task down, delegates to workers and synthesizes.</p><p><b>Use when:</b> subtasks can't be predicted in advance</p></div>
+          <div class="item"><svg viewBox="0 0 240 100"><rect class="mb" x="8" y="37" width="84" height="26" rx="7"/><text class="mt" x="50.0" y="50.5">Generator</text><rect class="mb" x="148" y="37" width="84" height="26" rx="7"/><text class="mt" x="190.0" y="50.5">Evaluator</text><path class="ma " d="M50 37C50 2 190 2 190 37"/><path class="ma " d="M190 63C190 98 50 98 50 63"/><text class="ml" x="120" y="34">OUTPUT</text><text class="ml" x="120" y="72">FEEDBACK</text></svg><h4>Evaluator-optimizer</h4><p>One LLM generates, another evaluates, in a loop.</p><p><b>Use when:</b> clear criteria make refinement pay off</p></div>
+        </div>
+      </div>
+      <div class="band">
+        <h3>Agents <small>LLMs dynamically direct their own process and tool usage</small></h3>
+        <div class="item row"><svg viewBox="0 0 340 110"><rect class="mb" x="10" y="28" width="110" height="54" rx="7"/><text class="mt" x="65.0" y="55.5">LLM</text><rect class="mb" x="220" y="28" width="110" height="54" rx="7"/><text class="mt" x="275.0" y="55.5">Environment</text><path class="ma " d="M120 45H220"/><path class="ma " d="M220 65H120"/><text class="ml" x="170" y="36">ACTION</text><text class="ml" x="170" y="82">FEEDBACK</text></svg>
+          <div><h4>An LLM using tools based on feedback from the environment, in a loop</h4>
+          <p>At each step it gets ground truth from the environment (tool results, code execution), can pause for human feedback, and stops on a condition or limit.</p>
+          <p><b>Use when:</b> the problem is open-ended and the number of steps can't be predicted.</p></div></div>
+      </div>
+    </div>
+    <p class="srcline">Source: Anthropic (2024). <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>.</p>
+  </div>
+</section>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker></defs></svg>
 <div class="dots" role="group" aria-label="Slides"></div>
 <div class="hint">Click, Space or ← → to navigate · F for full screen</div>
 <button class="fs" aria-label="Toggle full screen" title="Full screen (F)">
@@ -245,14 +308,17 @@
   document.querySelectorAll(".refs a").forEach(a => a.addEventListener("click", e => e.stopPropagation()));
 
 
-  // Shrink the definitions slide just enough to fit the window (no scrolling while presenting).
-  const defsInner = document.querySelector(".defs .inner"), defsSlide = document.querySelector(".defs");
+  // Shrink the dense slides just enough to fit the window (no scrolling while presenting).
+  const fitted = [".defs", ".blocks"].map(sel => document.querySelector(sel));
   function fit() {
-    defsInner.style.zoom = 1;
-    const cs = getComputedStyle(defsSlide);
-    const avail = defsSlide.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-    const need = [...defsInner.children].reduce((h, c) => h + c.offsetHeight, 0) + 14 * (defsInner.children.length - 1);
-    defsInner.style.zoom = Math.max(0.45, Math.min(1, avail / need));
+    fitted.forEach(slide => {
+      const inner = slide.querySelector(".inner");
+      inner.style.zoom = 1;
+      const cs = getComputedStyle(slide);
+      const avail = slide.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      const need = [...inner.children].reduce((h, c) => h + c.offsetHeight, 0) + 14 * (inner.children.length - 1);
+      inner.style.zoom = Math.max(0.45, Math.min(1, avail / need));
+    });
   }
   addEventListener("resize", fit);
   document.addEventListener("fullscreenchange", () => setTimeout(fit, 100));
@@ -305,7 +371,7 @@
   });
   // Click navigation: background only. Clicks on text, cards, links or buttons do nothing,
   // and a drag / text selection is never treated as a click.
-  const isBackground = el => el.matches("html, body, .slide, .inner, .grid, .col");
+  const isBackground = el => el.matches("html, body, .slide, .inner, .grid, .col, .stage, .band");
   addEventListener("click", e => {
     if (!isBackground(e.target)) return;
     if (String(getSelection()).length) return;
