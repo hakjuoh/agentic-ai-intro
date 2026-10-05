@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What is Agentic AI</title>
+<style>
+  :root { --bg: #f6f4ef; --card: #ffffffcc; --line: #dcd7cc; --ink: #1d1c1a; --muted: #6b675f; --accent: #c4501b; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #161513; --card: #211f1ccc; --line: #3a362f; --ink: #f1eee7; --muted: #a39e92; } }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+
+  /* soft drifting glow behind everything */
+  body::before { content: ""; position: fixed; width: 60vmax; height: 60vmax; left: 50%; top: 50%;
+    margin: -30vmax 0 0 -30vmax; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 65%);
+    animation: drift 14s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translate(-12vw, -8vh) scale(.9); } to { transform: translate(12vw, 8vh) scale(1.1); } }
+
+  .slide { position: absolute; inset: 0; overflow-y: auto; padding: 16px 5vw 52px; display: flex;
+    visibility: hidden; opacity: 0; transition: opacity .4s, visibility .4s; }
+  .slide.active { visibility: visible; opacity: 1; }
+  .inner { margin: auto; width: 100%; max-width: 1200px; display: grid; gap: 14px; }
+
+  /* word-by-word rise-in; words are inserted by JS with --d delay */
+  .w { display: inline-block; opacity: 0; transform: translateY(.6em); filter: blur(8px); }
+  .active .w { animation: rise .7s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: var(--d); }
+  @keyframes rise { to { opacity: 1; transform: none; filter: none; } }
+
+  h1 { margin: 0; font-size: clamp(36px, 7vw, 84px); line-height: 1.1; }
+  .title .inner { max-width: 1000px; }
+  .title h1 { text-align: center; }
+  .slide.title { padding-bottom: 16px; }   /* same top/bottom padding so the title is dead centre */
+  h1, blockquote { word-spacing: -.03em; }
+  .accent { color: var(--accent); }
+
+  h2 { margin: 0; font-size: clamp(22px, 3vw, 34px); text-align: center; }
+  /* 4 columns (years) x rows: the n-th card of every year shares row n, so each row starts at the same height */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 14px; row-gap: 8px; align-items: stretch; }
+  .col { display: contents; }
+  .col:nth-child(1) > * { grid-column: 1; } .col:nth-child(2) > * { grid-column: 2; }
+  .col:nth-child(3) > * { grid-column: 3; } .col:nth-child(4) > * { grid-column: 4; }
+  .col > .year { grid-row: 1; align-self: end; }
+  .col > .card:nth-of-type(1) { grid-row: 2; } .col > .card:nth-of-type(2) { grid-row: 3; }
+  .col > .card:nth-of-type(3) { grid-row: 4; } .col > .card:nth-of-type(4) { grid-row: 5; }
+  .year { margin: 0; padding-bottom: 4px; border-bottom: 2px solid var(--accent); font-size: clamp(18px, 1.8vw, 24px); }
+  .empty { margin: 0; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); font-size: 13px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px;
+    display: grid; gap: 4px; align-content: start; opacity: 0; transform: translateY(14px); }
+  .active .card { animation: slide .6s ease forwards; animation-delay: var(--co); }
+  @keyframes slide { to { opacity: 1; transform: none; } }
+
+  .label { margin: 0; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  blockquote { margin: 0; font-size: clamp(14px, 1.3vw, 21px); line-height: 1.38; font-weight: 600; }
+  blockquote b { color: var(--accent); font-weight: 700; }
+  .src { margin: 0; font-size: clamp(12px, .95vw, 15px); color: var(--muted); opacity: 0; }
+  .active .src { animation: slide .6s ease forwards; animation-delay: var(--sd); }
+
+  /* background-based so the line also draws correctly when a phrase wraps onto two lines */
+  .key { background: linear-gradient(var(--accent), var(--accent)) no-repeat 0 100% / 0% .12em;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; padding-bottom: .05em; }
+  .active .key { animation: draw .6s ease forwards; animation-delay: var(--ul); }
+  @keyframes draw { to { background-size: 100% .12em; } }
+
+  .slide.defs { padding-top: clamp(24px, 5.5vh, 56px); }   /* lowers the "Definitions" title a little */
+  .defs .inner { min-height: 100%; grid-template-rows: auto 1fr auto; }
+  .defs .grid { align-content: center; }
+  .refs { border-top: 1px solid var(--line); padding-top: 6px; font-size: 10px; color: var(--muted);
+    line-height: 1.3; opacity: 0; }
+  .active .refs { animation: slide .8s ease forwards; animation-delay: var(--rd, 3s); }
+  .refs h3 { margin: 0 0 3px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .refs ol { margin: 0; padding-left: 1.5em; columns: 3; column-gap: 28px; }
+  .refs li { break-inside: avoid; }
+  .refs a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 2px; }
+  .refs a:hover { color: var(--accent); }
+
+
+  /* hover / focus bubble that explains each year. It is a real element (not a pseudo-element) so its text can be
+     selected: the invisible padding below it bridges the gap to the year, keeping the hover alive while the mouse moves in. */
+  .year { position: relative; cursor: help; width: fit-content; min-width: 100%; }
+  .year .tip { display: flex; position: absolute; left: 0; right: 0; bottom: 100%; padding-bottom: 12px; z-index: 5;
+    font-size: clamp(13px, 1.05vw, 16px); font-weight: 500; line-height: 1.45; letter-spacing: normal; text-transform: none;
+    cursor: text; user-select: text; -webkit-user-select: text;
+    opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .2s, transform .2s, visibility .2s; }
+  /* the wrapper is exactly as wide as the year, so the arrow (on the wrapper) always points at the year text,
+     while the bubble itself may be wider and spill to the right (or to the left for the last column) */
+  .year .tip::after { content: ""; position: absolute; left: 22px; bottom: 6px; width: 12px; height: 12px; z-index: 2;
+    background: var(--bg); border-right: 1px solid var(--accent); border-bottom: 1px solid var(--accent); transform: rotate(45deg); }
+  .year .tip-body { display: block; flex: none; width: min(430px, 92vw); position: relative; z-index: 1; padding: 12px 14px;
+    border-radius: 12px; background: var(--bg); color: var(--ink); border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+  .year:hover .tip, .year:focus-visible .tip, .year:focus-within .tip, .year.pinned .tip { opacity: 1; visibility: visible; transform: none; }
+  .year:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .col:nth-child(4) > .year .tip { justify-content: flex-end; }
+
+
+  .hint { position: fixed; bottom: 52px; right: 20px; font-size: 13px; color: var(--muted); }
+  .fs { position: fixed; bottom: 12px; right: 16px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px;
+    background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; transition: .2s; }
+  .fs:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .fs:focus-visible { outline: 2px solid var(--accent); }
+  .fs .exit, :fullscreen .fs .enter { display: none; }
+  :fullscreen .fs .exit { display: block; }
+  :fullscreen .hint, body.on-defs .hint { display: none; }
+
+  .dots { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; }
+  .dots button { width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: pointer;
+    display: grid; place-items: center; }
+  .dots button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted);
+    opacity: .35; transition: .3s; }
+  .dots button:hover::before { opacity: .8; }
+  .dots button.on::before { opacity: 1; background: var(--accent); transform: scale(1.3); }
+  .dots button:focus-visible { outline: 2px solid var(--accent); border-radius: 50%; }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 1fr 1fr; align-items: start; }
+    .col { display: grid; gap: 8px; align-content: start; }
+    .col > * { grid-column: auto !important; grid-row: auto !important; }
+    .refs ol { columns: 2; }
+  }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .refs ol { columns: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    body::before { animation: none; }
+    .year .tip { transition: none; }
+    .w, .card, .src, .refs { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
+    .key { background-size: 100% .12em !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<section class="slide title active">
+  <div class="inner"><h1 data-split>What is <span class="accent">Agentic AI?</span></h1></div>
+</section>
+
+<section class="slide defs">
+  <div class="inner">
+    <h2>How Definitions Evolved</h2>
+    <div class="grid">
+      <section class="col">
+        <h3 class="year" tabindex="0">2023<span class="tip" role="tooltip"><span class="tip-body">Abstract definitions. An agent is described by how it works: it senses its environment, makes decisions and acts, pursuing goals with limited supervision.</span></span></h3>
+        <article class="card" data-order="0">
+          <blockquote data-split>“AI systems that can pursue <span class="key">complex goals</span> with <span class="key">limited direct supervision.”</span></blockquote>
+          <p class="src">Shavit et al. 2023</p>
+        </article>
+        <article class="card" data-order="1">
+          <blockquote data-split>“AI agents are artificial entities that <span class="key">sense their environment, make decisions, and take actions.”</span></blockquote>
+          <p class="src">Xi et al. 2023</p>
+        </article>
+      </section>
+      <section class="col">
+        <h3 class="year" tabindex="0">2024<span class="tip" role="tooltip"><span class="tip-body">More concrete. Definitions name the mechanics: observing the world, acting through tools, and the model itself directing its own process and tool use.</span></span></h3>
+        <article class="card" data-order="2">
+          <blockquote data-split>“…an application that attempts to <span class="key">achieve a goal</span> by <span class="key">observing the world and acting upon it</span> using the tools that it has at its disposal.”</blockquote>
+          <p class="src">Wiesinger et al. 2024</p>
+        </article>
+        <article class="card" data-order="3">
+          <blockquote data-split>Agents are systems where “LLMs <span class="key">dynamically direct their own processes and tool usage</span>, maintaining control over how they accomplish tasks.”</blockquote>
+          <p class="src">Anthropic 2024</p>
+        </article>
+      </section>
+      <section class="col">
+        <h3 class="year" tabindex="0">2025<span class="tip" role="tooltip"><span class="tip-body">Independence and multiplicity. Agents accomplish tasks on their own, and agentic AI becomes teams of multiple agents collaborating toward complex goals.</span></span></h3>
+        <article class="card" data-order="4">
+          <blockquote data-split>“Agents are systems that <span class="key">independently accomplish tasks</span> on your behalf.”</blockquote>
+          <p class="src">OpenAI 2025</p>
+        </article>
+        <article class="card" data-order="5">
+          <blockquote data-split>“Systems of <span class="key">multiple AI agents collaborating</span> to achieve complex goals.”</blockquote>
+          <p class="src">Sapkota et al. 2025</p>
+        </article>
+      </section>
+      <section class="col">
+        <h3 class="year" tabindex="0">2026<span class="tip" role="tooltip"><span class="tip-body">Scaling up. Agents decompose big problems into sub-tasks, delegate them to sub-agents and humans, adapt as conditions change, and act with direct effects on the systems they connect to.</span></span></h3>
+        <article class="card" data-order="6">
+          <blockquote data-split>AI agents need to <span class="key">meaningfully decompose problems</span> into manageable sub-components, “and safely delegate their completion across to other AI agents and humans alike.”</blockquote>
+          <p class="src">Tomašev et al. 2026</p>
+        </article>
+        <article class="card" data-order="7">
+          <blockquote data-split>AI agents “differ from earlier generative AI models in one important way: <span class="key">they can act, with direct effects on their environment</span> and on the systems they connect to.”</blockquote>
+          <p class="src">Singapore Consensus 2026</p>
+        </article>
+      </section>
+    </div>
+
+    <footer class="refs">
+      <h3>References</h3>
+      <ol>
+        <li>Shavit, Y., et al. (2023). <a href="https://cdn.openai.com/papers/practices-for-governing-agentic-ai-systems.pdf" target="_blank" rel="noopener">Practices for governing agentic AI systems</a>. OpenAI.</li>
+        <li>Xi, Z., et al. (2023). <a href="https://arxiv.org/abs/2309.07864" target="_blank" rel="noopener">The rise and potential of large language model based agents: A survey</a>.</li>
+        <li>Wiesinger, J., Marlow, P., &amp; Vuskovic, V. (2024, September). <a href="https://www.kaggle.com/whitepaper-agents" target="_blank" rel="noopener">Agents</a>. Google.</li>
+        <li>Anthropic. (2024, December 19). <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>.</li>
+        <li>OpenAI. (2025). <a href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener">A practical guide to building agents</a>.</li>
+        <li>Sapkota, R., Roumeliotis, K. I., &amp; Karkee, M. (2025). <a href="https://arxiv.org/abs/2505.10468" target="_blank" rel="noopener">AI agents vs. agentic AI: A conceptual taxonomy, applications and challenges</a>. <i>Information Fusion, 126</i>, 103599.</li>
+        <li>Tomašev, N., Franklin, M., &amp; Osindero, S. (2026). <a href="https://arxiv.org/abs/2602.11865" target="_blank" rel="noopener">Intelligent AI delegation</a>. Google DeepMind.</li>
+        <li>Casper, S., et al. (2026). <a href="https://arxiv.org/abs/2608.14611" target="_blank" rel="noopener">The 2026 Singapore consensus on global AI safety research priorities</a>.</li>
+      </ol>
+    </footer>
+  </div>
+</section>
+
+<div class="dots" role="group" aria-label="Slides"></div>
+<div class="hint">Click, Space or ← → to navigate · F for full screen</div>
+<button class="fs" aria-label="Toggle full screen" title="Full screen (F)">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path class="enter" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+    <path class="exit" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>
+  </svg>
+</button>
+
+<script>
+  // Wrap each word in a span so it can animate separately (keeps .key / .accent wrappers intact),
+  // then time underlines and source lines to start after the last word of that block has appeared.
+  document.querySelectorAll("[data-split]").forEach(el => {
+    const card = el.closest(".card");
+    const step = card ? 0.02 : 0.1;                              // faster word reveal inside cards
+    const base = card ? 0.4 + (+card.dataset.order) * 0.12 : 0.15; // cards cascade one after another
+    let n = 0;
+    const walk = node => {
+      [...node.childNodes].forEach(c => {
+        if (c.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          c.textContent.split(/(\s+)/).forEach(t => {
+            if (!t.trim()) { frag.append(t); return; }
+            const s = document.createElement("span");
+            s.className = "w"; s.textContent = t; s.style.setProperty("--d", (base + n++ * step) + "s");
+            frag.append(s);
+          });
+          c.replaceWith(frag);
+        } else walk(c);
+      });
+    };
+    walk(el);
+
+    const end = base + n * step + 0.5;
+    const keys = el.querySelectorAll(".key");
+    keys.forEach((k, i) => k.style.setProperty("--ul", (end + i * 0.4) + "s"));
+    if (card) {
+      card.style.setProperty("--co", (base - 0.25) + "s");        // card box appears just before its words
+      card.style.setProperty("--sd", (end + keys.length * 0.4) + "s");
+    }
+  });
+
+  const lastSd = Math.max(...[...document.querySelectorAll(".card")].map(c => parseFloat(c.style.getPropertyValue("--sd"))));
+  document.querySelector(".refs").style.setProperty("--rd", (lastSd + 0.5) + "s");
+  document.querySelectorAll(".refs a").forEach(a => a.addEventListener("click", e => e.stopPropagation()));
+
+
+  // Shrink the definitions slide just enough to fit the window (no scrolling while presenting).
+  const defsInner = document.querySelector(".defs .inner"), defsSlide = document.querySelector(".defs");
+  function fit() {
+    defsInner.style.zoom = 1;
+    const cs = getComputedStyle(defsSlide);
+    const avail = defsSlide.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const need = [...defsInner.children].reduce((h, c) => h + c.offsetHeight, 0) + 14 * (defsInner.children.length - 1);
+    defsInner.style.zoom = Math.max(0.45, Math.min(1, avail / need));
+  }
+  addEventListener("resize", fit);
+  document.addEventListener("fullscreenchange", () => setTimeout(fit, 100));
+  fit();
+
+  const slides = [...document.querySelectorAll(".slide")], dotBox = document.querySelector(".dots");
+  const dots = slides.map((_, k) => {
+    const b = document.createElement("button");
+    b.setAttribute("aria-label", "Slide " + (k + 1));
+    b.addEventListener("click", e => { e.stopPropagation(); go(k); b.blur(); });
+    dotBox.append(b);
+    return b;
+  });
+  let i = -1;                                   // -1 = nothing shown yet, so the first go() always applies
+  function go(n) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    if (n === i) return;
+    i = n;
+    slides.forEach((s, k) => { s.classList.toggle("active", k === i); s.scrollTop = 0; });
+    dots.forEach((d, k) => d.classList.toggle("on", k === i));
+    document.body.classList.toggle("on-defs", i > 0);
+    history.replaceState(null, "", "#" + (i + 1)); // keep the current page in the URL so a refresh stays here
+  }
+  // Slide number from the URL hash (#1, #2 …); anything invalid falls back to the first slide.
+  const slideFromHash = () => (parseInt(location.hash.slice(1), 10) || 1) - 1;
+  addEventListener("hashchange", () => go(slideFromHash()));
+  go(slideFromHash());
+
+
+  // Keep a bubble open once you start selecting its text (the mouse can leave it while dragging); click elsewhere to close.
+  const years = [...document.querySelectorAll(".year")];
+  years.forEach(y => y.querySelector(".tip").addEventListener("mousedown", () => {
+    years.forEach(o => o.classList.toggle("pinned", o === y));
+  }));
+  document.addEventListener("mousedown", e => {
+    if (!e.target.closest(".tip")) years.forEach(o => o.classList.remove("pinned"));
+  });
+
+  function toggleFullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen?.().catch(() => {});
+  }
+  const fsBtn = document.querySelector(".fs");
+  fsBtn.addEventListener("click", e => { e.stopPropagation(); toggleFullscreen(); fsBtn.blur(); });
+
+  addEventListener("keydown", e => {
+    if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); go(i + 1); }
+    else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); go(i - 1); }
+    else if (e.key.toLowerCase() === "f" && !e.metaKey && !e.ctrlKey) toggleFullscreen();
+  });
+  // Click navigation: background only. Clicks on text, cards, links or buttons do nothing,
+  // and a drag / text selection is never treated as a click.
+  const isBackground = el => el.matches("html, body, .slide, .inner, .grid, .col");
+  addEventListener("click", e => {
+    if (!isBackground(e.target)) return;
+    if (String(getSelection()).length) return;
+    go(e.clientX < innerWidth / 4 ? i - 1 : i + 1);
+  });
+</script>
+</body>
+</html>
