@@ -55,6 +55,15 @@
     background: radial-gradient(circle, #fff 0, #fff 14%, var(--suncol) 24%, color-mix(in srgb, var(--suncol) 45%, transparent) 40%, transparent 68%); }
   .sky .moon { position: absolute; left: var(--mx); top: var(--my); width: 7vmin; height: 7vmin; transform: translate(-50%, -50%); border-radius: 50%; opacity: var(--moonop);
     background: radial-gradient(circle at 36% 34%, #fff 0, #eef1ff 55%, #c9d0ee 100%); box-shadow: 0 0 3vmin 1vmin rgba(190,205,255,.45), 0 0 12vmin 4vmin rgba(150,170,255,.25); }
+  /* invisible handle on the sun (or the moon at night): drag it sideways to change the time of day, slide 1 only */
+  .grab { position: fixed; left: var(--gx, 50%); top: var(--gy, 50%); width: var(--gs, 14vmin); height: var(--gs, 14vmin); transform: translate(-50%, -50%);
+    border-radius: 50%; z-index: 25; cursor: grab; touch-action: none; }
+  .grab.drag { cursor: grabbing; }
+  body.on-defs .grab { display: none; }
+  .grab::after { content: "drag me \00b7  T = time-lapse \00b7  dbl-click = now"; position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); white-space: nowrap;
+    font-size: 12px; color: var(--hint-ink, #fff); opacity: 0; pointer-events: none; animation: grabhint .8s 3s forwards; }
+  .grab.used::after { display: none; }
+  @keyframes grabhint { to { opacity: .8; } }
   @keyframes tw { to { opacity: calc(var(--o, .8) * .35); } }
   @keyframes forward { to { transform: translateY(1024px); } }
   @keyframes zoom { 0% { transform: scale(.6); opacity: 0; } 20% { opacity: .35; } 100% { transform: scale(2.2); opacity: 0; } }
@@ -205,6 +214,12 @@
   .fs:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .fs:focus-visible { outline: 2px solid var(--accent); }
   .theme-wrap { position: fixed; top: 12px; right: 16px; z-index: 30; }
+  /* "back to now" chip: only while the sky time is set by hand, slide 1 only */
+  .now { position: fixed; top: 12px; right: 56px; z-index: 30; height: 32px; padding: 0 12px; border: 0; border-radius: 8px; font: inherit; font-size: 13px;
+    color: rgba(255,255,255,.9); background: rgba(255,255,255,.16); backdrop-filter: blur(6px); cursor: pointer; display: none; align-items: center; gap: 6px; }
+  .now:hover { background: rgba(255,255,255,.3); color: #fff; }
+  .now.show { display: flex; }
+  body.on-defs .now { display: none; }
   .theme { position: relative; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px;
     background: none; color: var(--muted); cursor: pointer; display: grid; place-items: center; transition: .2s; }
   .theme:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
@@ -295,6 +310,7 @@
 </head>
 <body>
 <div class="sky" aria-hidden="true"><div class="stars"></div><div class="sun"></div><div class="moon"></div><div class="fly"><div class="wisps"><div class="zoom" style="--dl:0s"></div><div class="zoom" style="--dl:-18s"></div></div><div class="ground"><div class="plane"><div class="scroll low"></div></div><div class="plane"><div class="scroll deck"></div></div><i></i></div></div><div class="haze"></div></div></div>
+<div class="grab" title="Drag to change the time of day (double-click: back to now)"></div>
 <section class="slide title active" data-reveal="title">
   <div class="inner"><h1><span class="accent">Autonomy</span> in AI Agents:<br>Concepts and Practice</h1></div>
 </section>
@@ -479,6 +495,7 @@
 </div>
 <div class="dots" role="group" aria-label="Slides"></div>
 <div class="hint">Click, Space or ← → to navigate · F for full screen</div>
+<button class="now" title="Back to the current time of day (Esc)">&#8634; Now</button>
 <div class="theme-wrap">
   <button class="theme" data-mode="system" aria-label="Colour theme: System" aria-haspopup="menu" aria-expanded="false" title="Theme">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -729,20 +746,25 @@
   document.addEventListener("click", () => setMenu(false));
   addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
   let forced = null;
-  window.setSkyTime = h => { forced = h; update(); };   // preview helper: setSkyTime(18.5), setSkyTime(null) = real time
+  let exact = false;                                     // true while the hour is set by hand: no Light/Dark 12 h shift
+  window.setSkyTime = (h, ex = false) => { forced = h; exact = h !== null && ex; update(); };   // preview helper: setSkyTime(18.5), setSkyTime(null) = real time
   function currentHour() {
     if (forced !== null) return forced;
     const m = /[?&]time=(\d{1,2})(?::(\d{2}))?(\.\d+)?/.exec(location.search);
     if (m) return parseFloat(m[1]) + (m[2] ? m[2] / 60 : 0) + (m[3] ? parseFloat(m[3]) : 0);
     const d = new Date(); return d.getHours() + d.getMinutes() / 60;
   }
+  function effectiveHour() {
+    let t = currentHour();
+    // a forced Light/Dark choice that disagrees with the real time of day moves the sky 12 hours (day <-> night)
+    if (!exact && mode !== "system" && isDark() === (65 * Math.sin(Math.PI * (t - 6) / 12) > 0)) t = (t + 12) % 24;
+    return t;
+  }
   const HZ = 68, TOP = 14;                        // horizon and highest sun position, in vh
   const pos = (cycle) => ({ x: 10 + 80 * cycle / 12, e: 65 * Math.sin(Math.PI * cycle / 12) });
   function update() {
     const dark = isDark();
-    let t = currentHour();
-    // a forced Light/Dark choice that disagrees with the real time of day moves the sky 12 hours (day <-> night)
-    if (mode !== "system" && dark === (65 * Math.sin(Math.PI * (t - 6) / 12) > 0)) t = (t + 12) % 24;
+    const t = effectiveHour();
     const sun = pos(t - 6), moon = pos(((t - 18) % 24 + 24) % 24);
     const p = palette(sun.e);
     const f = dark ? 1 - .2 * clamp((sun.e + 5) / 25, 0, 1) : 1;  // dark mode: a dimmer daytime
@@ -761,8 +783,61 @@
     const root = document.documentElement.style, bright = lum > .3;
     root.setProperty("--hint-ink", bright ? "rgba(12,28,56,.78)" : "rgba(238,244,255,.85)");
     root.setProperty("--hint-on", bright ? "#0c1c38" : "#fff");
+    // the drag handle sits on whichever of sun / moon is up
+    const onSun = sun.e > -4, b = onSun ? sun : moon;
+    grab.style.setProperty("--gx", clamp(b.x, -10, 110) + "%"); grab.style.setProperty("--gy", y(b.e)); grab.style.setProperty("--gs", onSun ? "16vmin" : "9vmin");
+    nowBtn.classList.toggle("show", exact);
     set("--sunop", clamp((sun.e + 8) / 8, 0, 1)); set("--moonop", night); set("--starop", clamp((-sun.e - 6) / 12, 0, 1));
   }
+  // Drag the sun sideways: it follows the pointer along its arc (80% of the width = 12 h) and keeps going into the night.
+  // T runs a 24 h time-lapse (about 20 s) from the current time; a drag, T again, or leaving slide 1 stops it.
+  const nowBtn = document.querySelector(".now"), grab = document.querySelector(".grab"), wrap24 = h => (h % 24 + 24) % 24;
+  let lapse = 0;
+  const stopLapse = () => { cancelAnimationFrame(lapse); lapse = 0; };
+  const backToNow = () => { stopLapse(); window.setSkyTime(null); };
+  let swallowUntil = 0, dragging = false;                          // the click that ends a drag / stops a time-lapse must not turn the slide
+  const manual = h => { forced = wrap24(h); exact = true; update(); };
+  grab.addEventListener("pointerdown", e => {
+    e.preventDefault(); e.stopPropagation(); stopLapse(); dragging = true;
+    grab.setPointerCapture(e.pointerId); grab.classList.add("drag", "used");
+    const x0 = e.clientX, t0 = effectiveHour();
+    manual(t0);
+    // listen on the window so a release anywhere (even outside the page) ends the drag; a move with no button down is a missed release
+    const mv = ev => { if (ev.pointerId !== e.pointerId) return; if (ev.buttons === 0) end(); else manual(t0 + (ev.clientX - x0) / innerWidth * 15); };
+    const end = ev => {
+      if (ev && ev.pointerId !== e.pointerId) return;
+      grab.classList.remove("drag"); endDrag();
+      for (const t of ["pointermove", "pointerup", "pointercancel", "lostpointercapture"]) removeEventListener(t, t === "pointermove" ? mv : end, true);
+      if (grab.hasPointerCapture(e.pointerId)) grab.releasePointerCapture(e.pointerId);
+    };
+    addEventListener("pointermove", mv, true);
+    for (const t of ["pointerup", "pointercancel", "lostpointercapture"]) addEventListener(t, end, true);
+  });
+  grab.addEventListener("dblclick", e => { e.stopPropagation(); backToNow(); });
+  nowBtn.addEventListener("click", e => { e.stopPropagation(); backToNow(); nowBtn.blur(); });
+  const endDrag = () => { if (dragging) { dragging = false; swallowUntil = performance.now() + 400; } };
+  addEventListener("pointerup", endDrag, true); addEventListener("pointercancel", endDrag, true); addEventListener("blur", endDrag);
+  addEventListener("click", e => {               // capture: runs before the slide-navigation click handler
+    if (dragging || performance.now() < swallowUntil || lapse) { e.stopImmediatePropagation(); e.preventDefault(); stopLapse(); }
+  }, true);
+  addEventListener("keydown", e => { if (e.key === "Escape" && exact && !document.body.classList.contains("on-defs") && lb.hidden) backToNow(); });
+  grab.addEventListener("click", e => e.stopPropagation());
+  function toggleLapse() {
+    if (lapse) return stopLapse();
+    grab.classList.add("used");
+    let last = performance.now(), t = effectiveHour();
+    const step = now => {
+      if (document.body.classList.contains("on-defs")) return stopLapse();
+      t += (now - last) / 1000 * 24 / 20; last = now; manual(t);
+      lapse = requestAnimationFrame(step);
+    };
+    lapse = requestAnimationFrame(step);
+  }
+  addEventListener("keydown", e => {
+    if (e.key.toLowerCase() !== "t" || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+    if (document.body.classList.contains("on-defs")) return;
+    toggleLapse();
+  });
   const stars = sky.querySelector(".stars");
   for (let n = 0; n < 130; n++) {
     const s = document.createElement("i"); s.className = "star";
