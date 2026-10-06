@@ -6,7 +6,8 @@
 <title>Autonomy in AI Agents: Concepts and Practice</title>
 <style>
   /* sky-blue palette for the content slides; Light = pale sky, Dark = night-flight navy */
-  :root { --bg: #eef3fa; --card: #ffffffcc; --line: #cdd9ea; --ink: #0f1b2d; --muted: #53627a; --accent: #1f5fbf; }
+  :root { --band-gap: 24px; /* space between bands, shared by every content slide */
+    --bg: #eef3fa; --card: #ffffffcc; --line: #cdd9ea; --ink: #0f1b2d; --muted: #53627a; --accent: #1f5fbf; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme]) { --bg: #0b1320; --card: #121c2ecc; --line: #243349; --ink: #e9eff9; --muted: #94a5bf; --accent: #6fa8ff; } }
   :root[data-theme="dark"] { --bg: #0b1320; --card: #121c2ecc; --line: #243349; --ink: #e9eff9; --muted: #94a5bf; --accent: #6fa8ff; }
   * { box-sizing: border-box; }
@@ -143,9 +144,9 @@
 
 
   /* building-blocks slide: builds up one layer per click */
-  .slide.blocks { padding-top: clamp(24px, 5.5vh, 56px); }
+  .slide.blocks { padding-top: clamp(24px, 5.5vh, 56px); padding-bottom: 68px; }
   .blocks .inner { min-height: 100%; grid-template-rows: auto 1fr auto; }
-  .blocks .stage { display: grid; gap: 12px; align-content: center; }
+  .blocks .stage { display: grid; gap: var(--band-gap); align-content: center; }
   .band { display: grid; gap: 8px; }
   .band > h3 { margin: 0; padding-bottom: 3px; border-bottom: 2px solid var(--accent); font-size: clamp(16px, 1.5vw, 21px); }
   .band > h3 small { font-weight: 500; color: var(--muted); font-size: .72em; margin-left: .5em; }
@@ -248,6 +249,41 @@
   .concept .by { color: var(--muted); font-size: .85em; }
   @media (max-width: 1100px) { .tgrid { grid-template-columns: 1fr 1fr; } .item.row { grid-template-columns: 1fr; } }
   @media (max-width: 760px) { .concepts { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } .refs ol { columns: 1; } }
+
+  /* slide 4: AgentStudio built itself */
+  .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .stage-card { position: relative; }
+  .stage-card .when { margin: 0; font-size: clamp(11px, .85vw, 13px); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  .stage-card h4 { font-size: clamp(14px, 1.25vw, 18px); }
+  .stage-card ul { margin: 0; padding-left: 1.1em; font-size: clamp(12px, .95vw, 14px); line-height: 1.38; color: var(--muted); }
+  .stage-card li b { color: var(--ink); font-weight: 600; }
+  .stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 34px; margin: 0; }
+  .stats div { display: flex; align-items: baseline; gap: 8px; }
+  .stats b { font-size: clamp(20px, 2.2vw, 30px); color: var(--accent); }
+  .stats span { font-size: clamp(11px, .9vw, 13px); color: var(--muted); }
+  .shots { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .shot { margin: 0; display: grid; gap: 6px; justify-items: center; }
+  .shot img { width: auto; max-width: 100%; max-height: 27vh; display: block; border: 1px solid var(--line); border-radius: 12px; background: #fff; cursor: zoom-in; }
+  .shot figcaption { text-align: center; }
+  .lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(6,12,24,.92); display: flex; flex-direction: column; overflow: hidden; }
+  .lightbox[hidden] { display: none; }
+  /* toolbar is its own row, so a zoomed image can never cover it; only the stage below scrolls */
+  .lb-bar { flex: none; display: flex; justify-content: flex-end; gap: 8px; align-items: center; padding: 10px 18px; }
+  .lb-stage { flex: 1 1 0; min-width: 0; min-height: 0; width: 100%; display: flex; overflow: auto; padding: 8px 24px 24px; cursor: grab; overscroll-behavior: contain; }
+  .lb-stage.drag { cursor: grabbing; user-select: none; }
+  .lb-stage img { flex: none; margin: auto; max-width: none; border-radius: 10px; background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.5); -webkit-user-drag: none; user-select: none; }
+  .lb-bar button { min-width: 40px; height: 40px; padding: 0 10px; border: 0; border-radius: 20px; cursor: pointer;
+    background: rgba(255,255,255,.16); color: #fff; font: 600 16px/1 inherit; font-family: inherit; }
+  .lb-bar button:hover { background: rgba(255,255,255,.3); }
+  .lb-bar button:focus-visible { outline: 2px solid #fff; }
+  .lb-bar .x { font-size: 26px; font-weight: 400; width: 40px; padding: 0; }
+  .lb-bar output { min-width: 54px; text-align: center; color: #fff; font-size: 14px; }
+  .shot figcaption { font-size: clamp(11px, .9vw, 13px); color: var(--muted); line-height: 1.35; }
+  .shot figcaption b { color: var(--ink); font-weight: 600; }
+  .intro { margin: 0; font-size: clamp(13px, 1.05vw, 16px); line-height: 1.5; color: var(--muted); }
+  .intro b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 1100px) { .stages { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 760px) { .stages { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) {
     .sky .scroll, .sky .zoom, .sky .fly { animation: none !important; }
     body::before { animation: none; }
@@ -362,6 +398,50 @@
   </div>
 </section>
 
+<section class="slide blocks fit" data-reveal="static">
+  <div class="inner">
+    <h2>AgentStudio</h2>
+    <div class="stage">
+      <div class="band">
+        <h3>About AgentStudio</h3>
+        <p class="intro">AgentStudio is a desktop app where you <b>draw a multi-agent workflow on a canvas</b> instead of writing code. Agent, Tool, Trigger and Condition nodes are joined by edges, and the drawing is itself the runnable definition. It runs on the Claude Agent SDK and OpenAI Agents, with tools from MCP servers, and a CLI and cron or webhook triggers let it run unattended. Its own repository became its first workload: agents triage, build, validate, review and merge the changes to the app that runs them, as a test of autonomy on a real, growing codebase.</p>
+      </div>
+      <div class="shots">
+        <figure class="shot"><img src="assets/agentstudio-day1.png" alt="The first version of AgentStudio: a node palette, a canvas and an inspector"><figcaption><b>12 May 2026, day 1.</b> Four node types, a canvas and an inspector. The workflow shown was drawn for this screenshot.</figcaption></figure>
+        <figure class="shot"><img src="assets/agentstudio-workflow.png" alt="AgentStudio today: the AgentStudio workflow, with an hourly repository audit and a five-minute issue intake, analyst, implementer and reviewer chain"><figcaption><b>Today.</b> The workflow that maintains AgentStudio: an hourly repository audit, and an issue chain of intake, analyst, implementer and reviewer.</figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide blocks fit" data-reveal="static">
+  <div class="inner">
+    <h2>AgentStudio Built Itself</h2>
+    <div class="stage">
+      <div class="band">
+        <h3>The loop <small>an app that builds agent workflows, run by agent workflows</small></h3>
+        <div class="item diag"><svg viewBox="0 0 1100 136" role="img" aria-label="Loop: issue, issue reviewer, author, validators, reviewer, auto-merge, with return paths for requested changes and new findings"><g class="tipt" tabindex="0" data-tip-title="Issue" data-tip="Every task starts as a GitHub issue with a severity label and a category label. Agents file them too: CLAUDE.md tells an agent to open an issue for any out-of-scope bug, gap or refactor it finds instead of widening its own task."><rect class="mb" x="10" y="50" width="150" height="44" rx="10"/><text class="mt" x="85" y="66">Issue</text><text class="mt" x="85" y="83" style="font-size:11px;fill:var(--muted)">filed by an agent</text></g><g class="tipt" tabindex="0" data-tip-title="Issue Reviewer" data-tip="A bundled AgentStudio workflow (examples/workflows/issue-reviewer.json): a cron trigger fires every 5 minutes and the agent self-assigns unassigned open issues through the GitHub MCP tool. The assignee is the claim, so two agents do not build the same issue."><rect class="mb" x="196" y="50" width="150" height="44" rx="10"/><text class="mt" x="271" y="66">Issue Reviewer</text><text class="mt" x="271" y="83" style="font-size:11px;fill:var(--muted)">claims the issue</text></g><g class="tipt" tabindex="0" data-tip-title="Author" data-tip="Not a workflow file but a rule in CLAUDE.md: each task runs in a sub-agent on its own branch and worktree, announces STARTED on the issue, comments at every checkpoint, pushes after every commit and opens a draft PR early. GitHub is the memory, so another agent can resume if this one dies."><rect class="mb" x="382" y="50" width="150" height="44" rx="10"/><text class="mt" x="457" y="66">Author</text><text class="mt" x="457" y="83" style="font-size:11px;fill:var(--muted)">own branch + worktree</text></g><g class="tipt" tabindex="0" data-tip-title="PR Validators" data-tip="Workflow examples/workflows/pr-validators.json: a Fork node fans the PR out to four parallel validators (CodeQL, code review, secret scan, dependency audit) and a Join node collects the results. A condition node passes only if all four pass."><rect class="mb" x="568" y="50" width="150" height="44" rx="10"/><text class="mt" x="643" y="66">Validators</text><text class="mt" x="643" y="83" style="font-size:11px;fill:var(--muted)">4 parallel checks</text></g><g class="tipt" tabindex="0" data-tip-title="Reviewer Agent" data-tip="Reads the PR and emits a strict JSON verdict (approve or request changes, with line comments). On approve, the next node queues a squash auto-merge. Added 15 May 2026 as autonomy track items 2 and 3 (issues 560 and 561)."><rect class="mb" x="754" y="50" width="150" height="44" rx="10"/><text class="mt" x="829" y="66">Reviewer</text><text class="mt" x="829" y="83" style="font-size:11px;fill:var(--muted)">approve or request changes</text></g><g class="tipt" tabindex="0" data-tip-title="Auto-merge" data-tip="On a unanimous pass, the workflow approves the PR and queues a squash merge with auto-merge. A janitor workflow then removes the merged worktree, local branch and remote branch on an hourly schedule."><rect class="mb" x="940" y="50" width="150" height="44" rx="10"/><text class="mt" x="1015" y="66">Auto-merge</text><text class="mt" x="1015" y="83" style="font-size:11px;fill:var(--muted)">squash into main</text></g><path class="ma" d="M160 72 H196"/><path class="ma" d="M346 72 H382"/><path class="ma" d="M532 72 H568"/><path class="ma" d="M718 72 H754"/><path class="ma" d="M904 72 H940"/><path class="ma" d="M829 94 V128 H457 V94"/><text class="ml" x="643" y="122">REQUEST CHANGES → FIXER LOOP (BOUNDED)</text><path class="ma" d="M457 50 V16 H85 V50"/><text class="ml" x="271" y="10">OUT-OF-SCOPE FINDING → NEW ISSUE</text></svg></div>
+      </div>
+      <div class="band">
+        <h3>How it grew</h3>
+        <div class="stages">
+          <div class="item stage-card"><p class="when">12 May · Day 1</p><h4>Built by hand with Claude</h4><ul><li>Canvas with <b>Agent, Tool, Trigger, Condition</b> nodes, inspector, SQLite, encrypted secrets</li><li><b>149 commits</b> in one day; 63 TypeScript files</li></ul></div>
+          <div class="item stage-card"><p class="when">13 May</p><h4>Gets hands: CLI and cron</h4><ul><li>Headless <b>CLI</b> and a <b>cron scheduler</b>, so workflows can run unattended</li><li>Issue 1 is a CLI feature; CLAUDE.md sets the agent rules</li></ul></div>
+          <div class="item stage-card"><p class="when">15 May</p><h4>Closes the loop</h4><ul><li><b>Autonomy 1/4 to 4/4</b> (issues 559 to 562): PR tools, Reviewer agent, PR Validators with auto-merge, bounded fixer loop</li></ul></div>
+          <div class="item stage-card"><p class="when">10 to 19 Jul</p><h4>Runs at scale</h4><ul><li>Numbered <b>waves</b> of work: approval gate, webhook trigger, OTLP tracing, crash-safe runs</li><li><b>1,095</b> TypeScript files in <code>src</code></li></ul></div>
+        </div>
+      </div>
+      <p class="stats"><span><b>1,303</b> commits</span><span><b>920</b> merged PRs</span><span><b>1,468</b> issues</span><span><b>17</b> days with commits</span></p>
+    </div>
+    <footer class="refs">
+      <h3>Source</h3>
+      <ol>
+        <li>Oh, H. (2026). <a href="https://github.com/hakjuoh/AgentStudio/issues" target="_blank" rel="noopener">AgentStudio</a>: git history, CLAUDE.md, examples/workflows and GitHub issues. Counts read from GitHub on 6 Oct 2026.</li>
+      </ol>
+    </footer>
+  </div>
+</section>
+
 <section class="slide blocks fit traits" data-reveal="rows">
   <div class="inner">
     <h2>How Agents Are Given Autonomy</h2>
@@ -393,6 +473,10 @@
 </section>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker></defs></svg>
+<div class="lightbox" hidden role="dialog" aria-modal="true" aria-label="Screenshot">
+  <div class="lb-bar"><button class="out" aria-label="Zoom out" title="Zoom out (-)">&minus;</button><output class="pct">100%</output><button class="in" aria-label="Zoom in" title="Zoom in (+)">+</button><button class="fit" aria-label="Fit to screen" title="Fit to screen (0)">Fit</button><button class="x" aria-label="Close" title="Close (Esc)">&times;</button></div>
+  <div class="lb-stage"><img alt=""></div>
+</div>
 <div class="dots" role="group" aria-label="Slides"></div>
 <div class="hint">Click, Space or ← → to navigate · F for full screen</div>
 <div class="theme-wrap">
@@ -689,6 +773,56 @@
   applyTheme(); update(); setInterval(update, 60000);
   osDark.addEventListener("change", update);
 })();
+
+  // Click a screenshot to view it. It opens fitted to the window; zoom with the buttons, + / - / 0, the wheel,
+  // or a click on the image (fit <-> 100%); drag to pan when zoomed. X, Esc or a click on the backdrop closes.
+  const lb = document.querySelector(".lightbox"), stage = lb.querySelector(".lb-stage"), lbImg = stage.querySelector("img");
+  const pct = lb.querySelector(".pct");
+  let lbScale = 1, lbFit = 1, moved = false;
+  const lbFitScale = () => {
+    const w = stage.clientWidth - 48, h = stage.clientHeight - 32;
+    return Math.min(w / lbImg.naturalWidth, h / lbImg.naturalHeight, 1);
+  };
+  function lbZoom(k, keepCenter = true) {
+    k = Math.max(lbFit * 0.5, Math.min(2, k));
+    const fx = (stage.scrollLeft + stage.clientWidth / 2) / (lbImg.width || 1), fy = (stage.scrollTop + stage.clientHeight / 2) / (lbImg.height || 1);
+    lbScale = k; lbImg.style.width = lbImg.naturalWidth * k + "px"; lbImg.style.height = lbImg.naturalHeight * k + "px";
+    pct.textContent = Math.round(k / lbFit * 100) + "%";
+    if (keepCenter) { stage.scrollLeft = fx * lbImg.width - stage.clientWidth / 2; stage.scrollTop = fy * lbImg.height - stage.clientHeight / 2; }
+  }
+  const lbReset = () => { lbFit = lbFitScale(); lbZoom(lbFit, false); stage.scrollLeft = stage.scrollTop = 0; };
+  const lbOpen = img => {
+    lbImg.onload = null; lb.hidden = false; lbImg.alt = img.alt;
+    const go = () => lbReset();
+    lbImg.onload = go; lbImg.src = img.currentSrc || img.src; if (lbImg.complete) go();
+    lb.querySelector(".x").focus();
+  };
+  const lbClose = () => { lb.hidden = true; };
+  document.querySelectorAll(".shot img").forEach(img => img.addEventListener("click", e => { e.stopPropagation(); lbOpen(img); }));
+  lb.querySelector(".in").addEventListener("click", e => { e.stopPropagation(); lbZoom(lbScale * 1.25); });
+  lb.querySelector(".out").addEventListener("click", e => { e.stopPropagation(); lbZoom(lbScale / 1.25); });
+  lb.querySelector(".fit").addEventListener("click", e => { e.stopPropagation(); lbReset(); });
+  lb.querySelector(".x").addEventListener("click", e => { e.stopPropagation(); lbClose(); });
+  stage.addEventListener("wheel", e => { e.preventDefault(); lbZoom(lbScale * (e.deltaY < 0 ? 1.1 : 1 / 1.1)); }, { passive: false });
+  lbImg.addEventListener("click", e => { e.stopPropagation(); if (moved) return; Math.abs(lbScale - lbFit) < 1e-3 ? lbZoom(1) : lbReset(); });
+  stage.addEventListener("pointerdown", e => {
+    if (e.target.closest(".lb-bar")) return;
+    let x = e.clientX, y = e.clientY; moved = false; stage.classList.add("drag");
+    const mv = ev => { const dx = ev.clientX - x, dy = ev.clientY - y; if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+      stage.scrollLeft -= dx; stage.scrollTop -= dy; x = ev.clientX; y = ev.clientY; };
+    const up = () => { stage.classList.remove("drag"); removeEventListener("pointermove", mv); removeEventListener("pointerup", up); };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up);
+  });
+  stage.addEventListener("click", e => { e.stopPropagation(); if (e.target === stage && !moved) lbClose(); });
+  addEventListener("resize", () => { if (!lb.hidden) lbReset(); });
+  addEventListener("keydown", e => {          // capture: while open, no key may change the slide
+    if (lb.hidden) return;
+    e.stopImmediatePropagation();
+    if (e.key === "Escape") lbClose();
+    else if (e.key === "+" || e.key === "=") lbZoom(lbScale * 1.25);
+    else if (e.key === "-") lbZoom(lbScale / 1.25);
+    else if (e.key === "0") lbReset();
+  }, true);
 </script>
 </body>
 </html>
