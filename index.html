@@ -167,8 +167,15 @@
     .col > * { grid-column: auto !important; grid-row: auto !important; }
     .refs ol { columns: 2; }
   }
+  .concepts { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 48px; }
+  .concept h3 { margin: 0 0 6px; padding-bottom: 3px; border-bottom: 2px solid var(--accent); font-size: clamp(18px, 1.8vw, 24px); }
+  .concept p { margin: 0 0 8px; font-size: clamp(13px, 1.1vw, 17px); line-height: 1.45; }
+  .concept p b, .concept li b { color: var(--accent); }
+  .concept ul { margin: 0 0 8px; padding-left: 1.2em; font-size: clamp(13px, 1.1vw, 17px); line-height: 1.45; }
+  .concept li { margin-bottom: 3px; }
+  .concept .by { color: var(--muted); font-size: .85em; }
   @media (max-width: 1100px) { .tgrid { grid-template-columns: 1fr 1fr; } .item.row { grid-template-columns: 1fr; } }
-  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .refs ol { columns: 1; } }
+  @media (max-width: 760px) { .concepts { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } .refs ol { columns: 1; } }
   @media (prefers-reduced-motion: reduce) {
     body::before { animation: none; }
     .year .tip { transition: none; }
@@ -300,6 +307,48 @@
         <li>Madaan, A., et al. (2023). <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2303.17651">Self-Refine: Iterative refinement with self-feedback</a>.</li>
         <li>Shinn, N., et al. (2023). <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2303.11366">Reflexion: Language agents with verbal reinforcement learning</a>.</li>
         <li>Inan, H., et al. (2023). <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2312.06674">Llama Guard: LLM-based input-output safeguard for human-AI conversations</a>. Meta.</li>
+      </ol>
+    </footer>
+  </div>
+</section>
+
+<section class="slide blocks fit mas">
+  <div class="inner">
+    <h2>Harness and Multi-agents</h2>
+    <div class="stage">
+      <div class="concepts">
+      <div class="concept"><h3>Harness</h3>
+        <p>The harness is the loop that calls the model and routes its tool calls to the relevant infrastructure <span class="by">(Martin et al. 2026)</span>. Its components:</p>
+        <ul>
+          <li><b>Loop:</b> the agent keeps running until an exit condition is reached: a tool call, a structured output, an error or a maximum number of turns <span class="by">(OpenAI 2025)</span>.</li>
+          <li><b>Instructions:</b> explicit guidelines and guardrails that define how the agent behaves <span class="by">(OpenAI 2025)</span>.</li>
+          <li><b>Tool routing:</b> the model's calls go to data, action and orchestration tools <span class="by">(OpenAI 2025; Martin et al. 2026)</span>.</li>
+          <li><b>Context and memory:</b> the harness decides what reaches the model's context window, for example by reorganizing or compacting events <span class="by">(Martin et al. 2026)</span>. The LLM is augmented with retrieval, tools and memory <span class="by">(Anthropic 2024)</span>, organized as modular memory <span class="by">(Sumers et al. 2024)</span>.</li>
+          <li><b>Guardrails:</b> several specialized checks used together as a layered defense <span class="by">(OpenAI 2025)</span>.</li>
+        </ul>
+        <p>One design keeps two things outside the harness: the sandbox, where code runs and files are edited, and the session, an append-only log of everything that happened. The harness can be restarted from that log, and each of the three can be replaced independently <span class="by">(Martin et al. 2026)</span>.</p></div>
+      <div class="concept"><h3>Multi-agents</h3>
+        <p>A multi-agent system is several agents collaborating toward a complex goal <span class="by">(Sapkota et al. 2025)</span>, with the workflow distributed across multiple coordinated agents <span class="by">(OpenAI 2025)</span>. Its components:</p>
+        <ul>
+          <li><b>Manager:</b> a central LLM breaks the task down, delegates to workers and synthesizes their results <span class="by">(Anthropic 2024)</span>, coordinating specialists through tool calls <span class="by">(OpenAI 2025)</span>.</li>
+          <li><b>Sub-agents:</b> workers spawned for one sub-task. Each starts with a fresh, isolated context and returns a summary to its parent <span class="by">(Claude Code docs)</span>. In one research system, parallel sub-agents beat a single agent by 90.2% on its internal research evaluation, but multi-agent systems used about 15 times the tokens of a chat <span class="by">(Anthropic 2025)</span>.</li>
+          <li><b>Handoffs:</b> in a decentralized system, peers transfer the task and the conversation state to one another <span class="by">(OpenAI 2025)</span>.</li>
+          <li><b>Parallelization:</b> independent subtasks run at the same time (sectioning), or the same task runs several times to get diverse outputs (voting) <span class="by">(Anthropic 2024)</span>.</li>
+          <li><b>Communication:</b> a proposed standard defines unified, bi-directional communication and dynamic discovery between models and external tools, through a host, client and server <span class="by">(Hou et al. 2026)</span>.</li>
+        </ul></div>
+    </div>
+    </div>
+    <footer class="refs" style="--rd:0.6s">
+      <h3>References</h3>
+      <ol>
+        <li>Martin, L., Cemaj, G., &amp; Cohen, M. (2026, April 8). <a target="_blank" rel="noopener" href="https://anthropic.com/engineering/managed-agents">Scaling managed agents: Decoupling the brain from the hands</a>. Anthropic.</li>
+        <li>OpenAI. (2025). <a target="_blank" rel="noopener" href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf">A practical guide to building agents</a>.</li>
+        <li>Anthropic. (2024, December 19). <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/building-effective-agents">Building effective agents</a>.</li>
+        <li>Sumers, T. R., Yao, S., Narasimhan, K., &amp; Griffiths, T. L. (2024). <a target="_blank" rel="noopener" href="https://openreview.net/forum?id=1i6ZCvflQJ">Cognitive architectures for language agents</a>. <i>Transactions on Machine Learning Research</i>.</li>
+        <li>Sapkota, R., Roumeliotis, K. I., &amp; Karkee, M. (2025). <a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.inffus.2025.103599">AI agents vs. agentic AI: A conceptual taxonomy, applications and challenges</a>. <i>Information Fusion, 126</i>, 103599.</li>
+        <li>Anthropic. (2025). <a target="_blank" rel="noopener" href="https://www.anthropic.com/engineering/multi-agent-research-system">How we built our multi-agent research system</a>.</li>
+        <li>Anthropic. <a target="_blank" rel="noopener" href="https://code.claude.com/docs/en/sub-agents">Subagents</a>. Claude Code documentation.</li>
+        <li>Hou, X., Zhao, Y., Wang, S., &amp; Wang, H. (2026). <a target="_blank" rel="noopener" href="https://doi.org/10.1145/3796519">Model Context Protocol (MCP): Landscape, security threats, and future research directions</a>. <i>ACM Transactions on Software Engineering and Methodology, 35</i>.</li>
       </ol>
     </footer>
   </div>
