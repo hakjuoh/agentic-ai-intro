@@ -306,6 +306,19 @@
     .w, .card, .src, .refs { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
     .key { background-size: 100% .12em !important; animation: none !important; }
   }
+
+  /* presenter scripts: <aside class="notes"> inside each slide; never shown to the audience except via the N overlay */
+  .notes { display: none; }
+  .notes-overlay { position: fixed; left: 0; right: 0; bottom: 0; z-index: 90; max-height: 46vh; overflow: auto; padding: 16px 28px 22px;
+    background: color-mix(in srgb, var(--bg) 96%, transparent); border-top: 2px solid var(--accent); box-shadow: 0 -10px 30px rgba(0,0,0,.25);
+    font-size: clamp(15px, 1.5vw, 22px); line-height: 1.5; color: var(--ink); }
+  .notes-overlay[hidden] { display: none; }
+  .notes-overlay p { margin: 0 0 .6em; max-width: 70em; }
+  .notes-overlay .cue, .notes-overlay b { color: var(--accent); }
+  .notes-overlay .pad-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; }
+  .notes-overlay textarea { flex: 1; min-height: 4.5em; resize: vertical; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--card); color: var(--ink); font: inherit; font-size: .8em; }
+  .notes-overlay button { padding: 6px 14px; border: 0; border-radius: 8px; background: var(--accent); color: var(--bg); font: inherit; font-size: .75em; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -313,6 +326,12 @@
 <div class="grab" title="Drag to change the time of day (double-click: back to now)"></div>
 <section class="slide title active" data-reveal="title">
   <div class="inner"><h1><span class="accent">Autonomy</span> in AI Agents:<br>Concepts and Practice</h1></div>
+  <aside class="notes">
+    <p>Welcome. Today is about one word that appears in every AI headline: <b>autonomy</b>.</p>
+    <p>Two questions: what do researchers and vendors actually mean by an "agent", and how are agents being given more autonomy in practice?</p>
+    <p>I will end with a case from my own work, an app whose agents built the app itself.</p>
+    <p><span class="cue">Roadmap: definitions, what makes an agent, a real example, how autonomy is granted.</span></p>
+  </aside>
 </section>
 
 <section class="slide defs fit" data-reveal="cards">
@@ -379,6 +398,14 @@
       </ol>
     </footer>
   </div>
+  <aside class="notes">
+    <p>Read this slide left to right as a timeline. The wording of "agent" changed a lot in four years.</p>
+    <p><b>2023, abstract.</b> Shavit and Xi describe an agent by what it does: it senses, decides and acts toward complex goals with limited supervision.</p>
+    <p><b>2024, concrete.</b> Google talks about observing the world and acting with tools. Anthropic adds the key shift: the LLM itself directs its own process and tool use.</p>
+    <p><b>2025, independence and plurality.</b> OpenAI says agents independently accomplish tasks on your behalf. Sapkota moves to many agents collaborating.</p>
+    <p><b>2026, scale.</b> Tomašev: decompose problems and delegate to other agents and humans. The Singapore consensus: agents can act, with direct effects on the systems they connect to.</p>
+    <p><span class="cue">Takeaway: from "describes" to "decides" to "delegates". Autonomy is the thread. Hover a year for its one-line summary.</span></p>
+  </aside>
 </section>
 
 <section class="slide blocks fit traits" data-reveal="static">
@@ -412,6 +439,13 @@
       </ol>
     </footer>
   </div>
+  <aside class="notes">
+    <p>Two bands. Top: what an agent <i>does</i>. Bottom: what it is <i>made of</i>.</p>
+    <p><b>Characteristics.</b> Start with autonomy, the topic of the talk: it controls its own actions. Then goal-directed, perceives its environment, social ability, reasons and plans, acts through tools. The first four trace back to Wooldridge and Jennings in 1995, which shows the idea is old and the LLM is what changed.</p>
+    <p><b>Building blocks.</b> Walk the diagram: the LLM reasons and decides. Instructions and context guide it. Tools let it read, act and delegate. The environment returns ground truth after each step. Session and memory live outside the model. Guardrails wrap everything.</p>
+    <p>The dashed box is the <b>harness</b>: the loop around the model. Hover it for the definition and the sources I followed.</p>
+    <p><span class="cue">Takeaway: an agent is an LLM that reasons and decides, acts through tools on its environment and on other agents, all inside guardrails.</span></p>
+  </aside>
 </section>
 
 <section class="slide blocks fit" data-reveal="static">
@@ -428,6 +462,12 @@
       </div>
     </div>
   </div>
+  <aside class="notes">
+    <p>Now the practice part. AgentStudio is my desktop app where you <b>draw a multi-agent workflow on a canvas</b> instead of writing code.</p>
+    <p>Nodes are Agent, Tool, Trigger and Condition, joined by edges. The drawing is the runnable definition. It runs on the Claude Agent SDK and OpenAI Agents, tools come from MCP servers, and cron or webhook triggers let it run unattended.</p>
+    <p>Left screenshot: day 1, 12 May 2026. Right screenshot: today, the workflow that maintains AgentStudio itself. Click an image to zoom.</p>
+    <p><span class="cue">Bridge: its own repository became its first workload, a test of autonomy on a real, growing codebase.</span></p>
+  </aside>
 </section>
 
 <section class="slide blocks fit" data-reveal="static">
@@ -457,6 +497,13 @@
       </ol>
     </footer>
   </div>
+  <aside class="notes">
+    <p>Every change starts as a <b>GitHub issue</b>. Walk the loop: the issue reviewer claims it, the author builds on its own branch, four validators check the pull request in parallel, the reviewer approves or sends it back for a bounded fix loop, then it merges itself.</p>
+    <p>The detail I like: anything an agent finds outside its task becomes a new issue. The loop feeds itself.</p>
+    <p>Timeline. Day 1 (12 May) built by hand with Claude. 13 May: CLI and cron, so it runs unattended. 15 May: the loop closes with reviewer, validators and auto-merge. July: it runs at scale in numbered waves.</p>
+    <p>Numbers, read from GitHub on 6 Oct 2026: 1,303 commits, 920 merged PRs, 1,468 issues, over 17 days with commits.</p>
+    <p><span class="cue">Say plainly: this is one project and one developer's experience, not a benchmark. Hover a box for what each step really is.</span></p>
+  </aside>
 </section>
 
 <section class="slide blocks fit traits" data-reveal="rows">
@@ -487,6 +534,16 @@
       </ol>
     </footer>
   </div>
+  <aside class="notes">
+    <p>Final slide: how do agents <i>get</i> autonomy? Six shifts, each "before" and "now".</p>
+    <p><b>Spawns its own agents</b>: from fixed roles to a lead agent deciding how many subagents to launch, and peers messaging each other.</p>
+    <p><b>Builds its own tools</b>: from a fixed tool list to writing code and saving the tool it needed.</p>
+    <p><b>Acts on its environment</b>: runs code in a sandbox, even operates a computer like a person.</p>
+    <p><b>Works out what is needed</b>: expands a short request into a plan, asks clarifying questions, tests the result itself.</p>
+    <p><b>Checks its own work</b>: models praise their own output, so a separate evaluator agent judges it.</p>
+    <p><b>Is supervised less</b>: people move to auto-approve and watch. Auto-approve grows from about 20% to over 40% of sessions (Anthropic 2026).</p>
+    <p><span class="cue">Closing: autonomy is granted step by step as trust and tooling grow. Questions?</span></p>
+  </aside>
 </section>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker></defs></svg>
@@ -495,7 +552,7 @@
   <div class="lb-stage"><img alt=""></div>
 </div>
 <div class="dots" role="group" aria-label="Slides"></div>
-<div class="hint">Click, Space or ← → to navigate · F for full screen</div>
+<div class="hint">Click, Space or ← → to navigate · F for full screen · N notes · S presenter view</div>
 <button class="now" title="Back to the current time of day (Esc)">&#8634; Now</button>
 <div class="theme-wrap">
   <button class="theme" data-mode="system" aria-label="Colour theme: System" aria-haspopup="menu" aria-expanded="false" title="Theme">
@@ -603,6 +660,7 @@
     dotBox.append(b);
     return b;
   });
+  let notesReady = false;
   let i = -1;                                   // -1 = nothing shown yet, so the first go() always applies
   function go(n) {
     n = Math.max(0, Math.min(slides.length - 1, n));
@@ -612,6 +670,7 @@
     dots.forEach((d, k) => d.classList.toggle("on", k === i));
     document.body.classList.toggle("on-defs", i > 0);
     history.replaceState(null, "", "#" + (i + 1)); // keep the current page in the URL so a refresh stays here
+    if (notesReady) syncNotes();
   }
   // Slide number from the URL hash (#1, #2 …); anything invalid falls back to the first slide.
   const slideFromHash = () => (parseInt(location.hash.slice(1), 10) || 1) - 1;
@@ -683,10 +742,105 @@
   fsBtn.addEventListener("click", e => { e.stopPropagation(); toggleFullscreen(); fsBtn.blur(); });
 
   addEventListener("keydown", e => {
+    if (e.target.closest?.("textarea")) return;     // typing in the notes pad must not navigate
     if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); go(i + 1); }
     else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); go(i - 1); }
     else if (e.key.toLowerCase() === "f" && !e.metaKey && !e.ctrlKey) toggleFullscreen();
+    else if (e.key.toLowerCase() === "n" && !e.metaKey && !e.ctrlKey) toggleNotes();
+    else if (e.key.toLowerCase() === "s" && !e.metaKey && !e.ctrlKey) openPresenter();
   });
+
+  // Presenter scripts. Each slide carries its script in <aside class="notes">.
+  // N toggles an overlay in this window; S opens a presenter window (script, next slide, timers) that follows and drives this one.
+  const overlay = document.createElement("div");
+  overlay.className = "notes-overlay"; overlay.hidden = true;
+  overlay.innerHTML = '<div class="script"></div><div class="pad-row"><textarea placeholder="Your notes for this slide (saved in this browser)"></textarea><button type="button">Export .md</button></div>';
+  document.body.append(overlay);
+  const scriptBox = overlay.querySelector(".script"), padBox = overlay.querySelector("textarea");
+
+  // Per-slide notes pad, kept in this browser's localStorage and exported as Markdown.
+  const PAD_KEY = "deckNotes";
+  const loadPad = () => { try { return JSON.parse(localStorage.getItem(PAD_KEY)) || {}; } catch (e) { return {}; } };
+  const savePad = (k, text) => {
+    const all = loadPad();
+    if (text.trim()) all[k] = text; else delete all[k];
+    try { localStorage.setItem(PAD_KEY, JSON.stringify(all)); } catch (e) {}
+  };
+  function exportPad() {
+    const all = loadPad();
+    const parts = slides.map((_, k) => all[k] && "## " + (k + 1) + ". " + titleOf(k) + "\n\n" + all[k].trim()).filter(Boolean);
+    const md = "# " + document.title + " — notes\n\n" + (parts.join("\n\n") || "_No notes yet._") + "\n";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([md], { type: "text/markdown" }));
+    a.download = "notes-" + new Date().toISOString().slice(0, 10) + ".md";
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+  padBox.addEventListener("input", () => savePad(i, padBox.value));
+  overlay.querySelector("button").addEventListener("click", exportPad);
+  const notesOf = k => slides[k]?.querySelector(".notes")?.innerHTML || "<p><i>No script for this slide.</i></p>";
+  const titleOf = k => slides[k] ? (slides[k].querySelector("h1, h2")?.textContent.replace(/\s+/g, " ").trim() || "Slide " + (k + 1)) : "End of deck";
+  let presenter = null;
+  notesReady = true; syncNotes();
+  function syncNotes() {
+    scriptBox.innerHTML = notesOf(i);
+    padBox.value = loadPad()[i] || "";
+    if (presenter && !presenter.closed) presenter.postMessage({ deck: "state", i, total: slides.length,
+      title: titleOf(i), next: i + 1 < slides.length ? titleOf(i + 1) : "End of deck", notes: notesOf(i), pad: padBox.value }, "*");
+  }
+  function toggleNotes() { overlay.hidden = !overlay.hidden; if (!overlay.hidden) syncNotes(); }
+  const PRESENTER_HTML = `<!doctype html><meta charset="utf-8"><title>Presenter view</title>
+<style>
+  body { margin: 0; font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #0b1320; color: #e9eff9; display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
+  header, footer { display: flex; gap: 18px; align-items: baseline; padding: 10px 20px; background: #121c2e; }
+  header b { font-size: 20px; } .t { font-variant-numeric: tabular-nums; color: #6fa8ff; } .sp { flex: 1; }
+  textarea { width: 100%; min-height: 7em; box-sizing: border-box; margin-top: 8px; padding: 10px 12px; border: 1px solid #31456a; border-radius: 8px; background: #121c2e; color: inherit; font: 16px/1.5 inherit; resize: vertical; }
+  main { overflow: auto; padding: 18px 28px; font-size: 22px; line-height: 1.55; } main p { margin: 0 0 .7em; max-width: 46em; }
+  main b, main .cue { color: #6fa8ff; } .next { color: #94a5bf; } .off { color: #ff9a9a; }
+  button { font: inherit; padding: 6px 16px; border: 0; border-radius: 8px; background: #243349; color: inherit; cursor: pointer; } button:hover { background: #31456a; }
+</style>
+<header><b id="pos">–</b><span id="ttl"></span><span class="sp"></span><span>Slide <span class="t" id="st">0:00</span></span><span>Total <span class="t" id="tt">0:00</span></span><button id="rs">Reset timer</button></header>
+<main><div id="notes"></div><textarea id="pad" placeholder="Your notes for this slide (saved in the browser)"></textarea></main>
+<footer><button id="pv">← Prev</button><button id="nx">Next →</button><button id="ex">Export notes (.md)</button><span class="sp"></span><span class="next">Next: <span id="nxt">–</span></span><span class="off" id="off"></span></footer>`;
+  function openPresenter() {
+    if (presenter && !presenter.closed) { presenter.focus(); return; }
+    presenter = window.open("", "presenter", "width=900,height=700");
+    if (!presenter) return;
+    presenter.document.write(PRESENTER_HTML);
+    presenter.document.close();
+    const run = function (deckWin) {                        // runs inside the presenter window
+      const $ = id => document.getElementById(id), fmt = t => Math.floor(t / 60000) + ":" + String(Math.floor(t / 1000) % 60).padStart(2, "0");
+      let t0 = Date.now(), ts = t0, cur = -1;
+      const send = d => deckWin.closed ? ($("off").textContent = "Deck window closed") : deckWin.postMessage({ deck: "cmd", d }, "*");
+      addEventListener("message", e => {
+        const m = e.data; if (!m || m.deck !== "state") return;
+        const cur0 = cur; if (m.i !== cur) { cur = m.i; ts = Date.now(); }
+        $("pos").textContent = (m.i + 1) + " / " + m.total; $("ttl").textContent = m.title;
+        $("notes").innerHTML = m.notes; if (document.activeElement !== $("pad") || m.i !== cur0) $("pad").value = m.pad; $("nxt").textContent = m.next; $("off").textContent = "";
+      });
+      $("pad").oninput = () => deckWin.postMessage({ deck: "cmd", note: $("pad").value }, "*");
+      $("ex").onclick = () => deckWin.postMessage({ deck: "cmd", exp: 1 }, "*");
+      $("pv").onclick = () => send(-1); $("nx").onclick = () => send(1);
+      $("rs").onclick = () => { t0 = ts = Date.now(); };
+      addEventListener("keydown", e => {
+        if (e.target.tagName === "TEXTAREA") return;
+        if (["ArrowRight", "ArrowDown", " ", "PageDown"].includes(e.key)) { e.preventDefault(); send(1); }
+        else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); send(-1); }
+      });
+      setInterval(() => { $("st").textContent = fmt(Date.now() - ts); $("tt").textContent = fmt(Date.now() - t0); }, 500);
+      send(0);
+    };
+    const sc = presenter.document.createElement("script");
+    sc.textContent = "(" + run + ")(window.opener)";
+    presenter.document.body.append(sc);
+    setTimeout(syncNotes, 50);
+  }
+  addEventListener("message", e => {
+    if (e.source !== presenter || !e.data || e.data.deck !== "cmd") return;
+    if (typeof e.data.note === "string") savePad(i, e.data.note);
+    else if (e.data.exp) exportPad();
+    else if (e.data.d) go(i + e.data.d); else syncNotes();
+  });
+  addEventListener("pagehide", () => { if (presenter && !presenter.closed) presenter.close(); });
   // Click navigation: background only. Clicks on text, cards, links or buttons do nothing,
   // and a drag / text selection is never treated as a click.
   const isBackground = el => el.matches("html, body, .slide, .inner, .grid, .col, .stage, .band");
