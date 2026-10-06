@@ -100,8 +100,8 @@
   .accent { color: var(--accent); }
 
   h2 { margin: 0; font-size: clamp(22px, 3vw, 34px); text-align: center; }
-  /* 4 columns (years) x rows: the n-th card of every year shares row n, so each row starts at the same height */
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); column-gap: 14px; row-gap: 8px; align-items: stretch; }
+  /* 4 columns (years) x rows: the n-th card of every year shares row n, so each row starts at the same height; card rows are equal-height (1fr) so every box matches */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto 1fr 1fr; column-gap: 40px; row-gap: 8px; align-items: stretch; align-self: start; }
   .col { display: contents; }
   .col:nth-child(1) > * { grid-column: 1; } .col:nth-child(2) > * { grid-column: 2; }
   .col:nth-child(3) > * { grid-column: 3; } .col:nth-child(4) > * { grid-column: 4; }
@@ -129,7 +129,7 @@
 
   .slide.defs { padding-top: clamp(24px, 5.5vh, 56px); }   /* lowers the "Definitions" title a little */
   .defs .inner { min-height: 100%; grid-template-rows: auto 1fr auto; }
-  .defs .grid { align-content: center; }
+  .defs .grid { align-content: start; padding-top: var(--band-gap); }   /* same title-to-content gap as the .blocks slides */
   .refs { border-top: 1px solid var(--line); padding-top: 6px; font-size: 10px; color: var(--muted);
     line-height: 1.3; opacity: 0; }
   .active .refs { animation: slide .8s ease forwards; animation-delay: var(--rd, 3s); }
@@ -141,21 +141,22 @@
 
 
   /* hover / focus bubble that explains each year. It is a real element (not a pseudo-element) so its text can be
-     selected: the invisible padding below it bridges the gap to the year, keeping the hover alive while the mouse moves in. */
+     selected: the invisible padding above it bridges the gap to the year, keeping the hover alive while the mouse moves in. */
   .year { position: relative; cursor: help; width: fit-content; min-width: 100%; }
-  .year .tip { display: flex; position: absolute; left: 0; right: 0; bottom: 100%; padding-bottom: 12px; z-index: 5;
+  .year .tip { display: flex; position: absolute; left: 0; right: 0; top: 100%; padding-top: 12px; z-index: 5;
     font-size: clamp(13px, 1.05vw, 16px); font-weight: 500; line-height: 1.45; letter-spacing: normal; text-transform: none;
     cursor: text; user-select: text; -webkit-user-select: text;
-    opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .2s, transform .2s, visibility .2s; }
+    opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity .2s, transform .2s, visibility .2s; }
   /* the wrapper is exactly as wide as the year, so the arrow (on the wrapper) always points at the year text,
      while the bubble itself may be wider and spill to the right (or to the left for the last column) */
-  .year .tip::after { content: ""; position: absolute; left: 22px; bottom: 6px; width: 12px; height: 12px; z-index: 2;
-    background: var(--bg); border-right: 1px solid var(--accent); border-bottom: 1px solid var(--accent); transform: rotate(45deg); }
+  .year .tip::after { content: ""; position: absolute; left: 22px; top: 6px; width: 12px; height: 12px; z-index: 2;
+    background: var(--bg); border-left: 1px solid var(--accent); border-top: 1px solid var(--accent); transform: rotate(45deg); }
   .year .tip-body { display: block; flex: none; width: min(430px, 92vw); position: relative; z-index: 1; padding: 12px 14px;
     border-radius: 12px; background: var(--bg); color: var(--ink); border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
   .year:hover .tip, .year:focus-visible .tip, .year:focus-within .tip, .year.pinned .tip { opacity: 1; visibility: visible; transform: none; }
   .year:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
-  .col:nth-child(4) > .year .tip { justify-content: flex-end; }
+  /* 2023 and 2024 bubbles open to the right of the year, 2025 opens to the left */
+  .col:nth-child(3) > .year .tip { justify-content: flex-end; }
 
 
   /* building-blocks slide: builds up one layer per click */
@@ -256,7 +257,10 @@
   .dots button:focus-visible { outline: 2px solid var(--accent); border-radius: 50%; }
 
   @media (max-width: 1100px) {
-    .grid { grid-template-columns: 1fr 1fr; align-items: start; }
+    .grid { grid-template-columns: 1fr 1fr; grid-template-rows: none; align-items: start; }
+    /* two-column layout: the right-hand column (2024) opens left, the left-hand ones (2023, 2025) open right */
+    .col:nth-child(2) > .year .tip { justify-content: flex-end; }
+    .col:nth-child(3) > .year .tip { justify-content: flex-start; }
     .col { display: grid; gap: 8px; align-content: start; }
     .col > * { grid-column: auto !important; grid-row: auto !important; }
     .refs ol { columns: 2; }
@@ -367,7 +371,7 @@
         </article>
       </section>
       <section class="col">
-        <h3 class="year" tabindex="0">2025<span class="tip" role="tooltip"><span class="tip-body">Independence and multiplicity. Agents accomplish tasks on their own, and agentic AI becomes teams of multiple agents collaborating toward complex goals.</span></span></h3>
+        <h3 class="year" tabindex="0">2025<span class="tip" role="tooltip"><span class="tip-body">Independence and multiplicity. An agent independently accomplishes tasks on your behalf, and agentic AI extends this to teams of agents collaborating toward complex goals.</span></span></h3>
         <article class="card">
           <blockquote>“Agents are systems that <span class="key">independently accomplish tasks</span> on your behalf.”</blockquote>
           <p class="src">OpenAI 2025</p>
@@ -375,17 +379,6 @@
         <article class="card">
           <blockquote>“Systems of <span class="key">multiple AI agents collaborating</span> to achieve complex goals.”</blockquote>
           <p class="src">Sapkota et al. 2025</p>
-        </article>
-      </section>
-      <section class="col">
-        <h3 class="year" tabindex="0">2026<span class="tip" role="tooltip"><span class="tip-body">Scaling up. Agents decompose big problems into sub-tasks, delegate them to sub-agents and humans, adapt as conditions change, and act with direct effects on the systems they connect to.</span></span></h3>
-        <article class="card">
-          <blockquote>AI agents need to <span class="key">meaningfully decompose problems</span> into manageable sub-components, “and safely delegate their completion across to other AI agents and humans alike.”</blockquote>
-          <p class="src">Tomašev et al. 2026</p>
-        </article>
-        <article class="card">
-          <blockquote>AI agents “differ from earlier generative AI models in one important way: <span class="key">they can act, with direct effects on their environment</span> and on the systems they connect to.”</blockquote>
-          <p class="src">Singapore Consensus 2026</p>
         </article>
       </section>
     </div>
@@ -399,18 +392,15 @@
         <li>Anthropic. (2024, December 19). <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>.</li>
         <li>OpenAI. (2025). <a href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener">A practical guide to building agents</a>.</li>
         <li>Sapkota, R., Roumeliotis, K. I., &amp; Karkee, M. (2025). <a href="https://arxiv.org/abs/2505.10468" target="_blank" rel="noopener">AI agents vs. agentic AI: A conceptual taxonomy, applications and challenges</a>. <i>Information Fusion, 126</i>, 103599.</li>
-        <li>Tomašev, N., Franklin, M., &amp; Osindero, S. (2026). <a href="https://arxiv.org/abs/2602.11865" target="_blank" rel="noopener">Intelligent AI delegation</a>. Google DeepMind.</li>
-        <li>Casper, S., et al. (2026). <a href="https://arxiv.org/abs/2608.14611" target="_blank" rel="noopener">The 2026 Singapore consensus on global AI safety research priorities</a>.</li>
       </ol>
     </footer>
   </div>
   <aside class="notes">
-    <p>Read this slide left to right as a timeline. The wording of "agent" changed a lot in four years.</p>
+    <p>Read this slide left to right as a timeline. The wording of "agent" changed a lot in three years.</p>
     <p><b>2023, abstract.</b> Shavit and Xi describe an agent by what it does: it senses, decides and acts toward complex goals with limited supervision.</p>
     <p><b>2024, concrete.</b> Google talks about observing the world and acting with tools. Anthropic adds the key shift: the LLM itself directs its own process and tool use.</p>
     <p><b>2025, independence and plurality.</b> OpenAI says agents independently accomplish tasks on your behalf. Sapkota moves to many agents collaborating.</p>
-    <p><b>2026, scale.</b> Tomašev: decompose problems and delegate to other agents and humans. The Singapore consensus: agents can act, with direct effects on the systems they connect to.</p>
-    <p><span class="cue">Takeaway: from "describes" to "decides" to "delegates". Autonomy is the thread. Hover a year for its one-line summary.</span></p>
+    <p><span class="cue">Takeaway: from "describes" to "decides" to "works independently, and together". Autonomy is the thread. Hover a year for its one-line summary.</span></p>
   </aside>
 </section>
 
