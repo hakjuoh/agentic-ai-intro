@@ -106,6 +106,14 @@
     display: grid; gap: 3px; align-content: start; }
   /* workflow cards share the grid's rows (subgrid), so each text line, e.g. every "Use when", sits at the same height */
   .wf > .item { grid-row: span 4; grid-template-rows: subgrid; row-gap: 3px; }
+  .tgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .trait { align-content: start; }
+  .trait h4 { color: var(--accent); }
+  .by { font-size: clamp(11px, .85vw, 13px) !important; opacity: .85; }
+  .item.diag { padding: 8px 12px; }
+  .item.diag svg { max-height: 250px; }
+  .wf.four { grid-template-columns: repeat(4, 1fr); }
+  .band > .note { margin: 0; font-size: clamp(11px, .9vw, 13px); color: var(--muted); }
   .item.row { grid-template-columns: minmax(200px, 300px) 1fr; align-items: center; column-gap: 18px; }
   .item h4 { margin: 0; font-size: clamp(14px, 1.2vw, 17px); }
   .item p { margin: 0; font-size: clamp(12px, .95vw, 14px); line-height: 1.35; color: var(--muted); }
@@ -122,18 +130,20 @@
   /* hover / focus bubble for the diagram boxes (one shared element, positioned by JS) */
   .tipt { cursor: help; outline: none; }
   .tipt:hover .mb, .tipt:focus-visible .mb { stroke-width: 3; fill: color-mix(in srgb, var(--accent) 10%, var(--card)); }
-  .bubble { position: fixed; z-index: 20; width: min(340px, 92vw); padding: 10px 13px; border-radius: 12px; pointer-events: none;
+  .bubble { position: fixed; z-index: 20; width: min(340px, 92vw); padding: 10px 13px; border-radius: 12px; cursor: text; user-select: text; -webkit-user-select: text;
     background: var(--bg); color: var(--ink); border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,.18);
     font-size: 14px; line-height: 1.45; opacity: 0; visibility: hidden; transform: translateY(4px); transition: opacity .15s, transform .15s, visibility .15s; }
+  /* invisible bridge over the gap to the box, so the pointer can travel from the box into the bubble */
+  .bubble::before { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 16px; }
+  .bubble.below::before { top: auto; bottom: 100%; }
+  .bubble.left::before { top: 0; bottom: 0; left: 100%; right: auto; width: 16px; height: auto; }
+  .bubble.left::after { left: auto; right: -7px; bottom: auto; top: var(--ay, 50%); margin: -6px 0 0; transform: rotate(-45deg); }
   .bubble.on { opacity: 1; visibility: visible; transform: none; }
   .bubble b { display: block; margin-bottom: 2px; color: var(--accent); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
   .bubble::after { content: ""; position: absolute; left: var(--ax, 50%); width: 12px; height: 12px; margin-left: -6px; background: var(--bg);
     border: 1px solid var(--accent); border-top: 0; border-left: 0; bottom: -7px; transform: rotate(45deg); }
   .bubble.below::after { bottom: auto; top: -7px; transform: rotate(225deg); }
 
-  .srcline { margin: 0; text-align: center; font-size: 11px; color: var(--muted); }
-  .srcline a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 2px; }
-  .srcline a:hover { color: var(--accent); }
 
   .hint { position: fixed; bottom: 52px; right: 20px; font-size: 13px; color: var(--muted); }
   .fs { position: fixed; bottom: 12px; right: 16px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px;
@@ -159,7 +169,7 @@
     .col > * { grid-column: auto !important; grid-row: auto !important; }
     .refs ol { columns: 2; }
   }
-  @media (max-width: 1100px) { .wf { grid-template-columns: repeat(2, 1fr); } .item.row { grid-template-columns: 1fr; } }
+  @media (max-width: 1100px) { .tgrid { grid-template-columns: 1fr 1fr; } .wf { grid-template-columns: repeat(2, 1fr); } .item.row { grid-template-columns: 1fr; } }
   @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .refs ol { columns: 1; } }
   @media (prefers-reduced-motion: reduce) {
     body::before { animation: none; }
@@ -174,7 +184,7 @@
   <div class="inner"><h1 data-split>What is <span class="accent">Agentic AI?</span></h1></div>
 </section>
 
-<section class="slide defs">
+<section class="slide defs fit">
   <div class="inner">
     <h2>How Definitions Evolved</h2>
     <div class="grid">
@@ -240,16 +250,41 @@
   </div>
 </section>
 
-<section class="slide blocks">
+<section class="slide blocks fit traits">
   <div class="inner">
-    <h2>Building Blocks, Workflows and Agents</h2>
+    <h2>What Makes an Agent</h2>
     <div class="stage">
       <div class="band">
-        <h3>Building block <small>augmented LLM</small></h3>
-        <div class="item row"><svg viewBox="0 0 300 120"><g class="tipt" tabindex="0" data-tip-title="Retrieval" data-tip="The model generates its own search queries to pull in the information it needs."><rect class="mb g" x="8" y="6" width="84" height="28" rx="7"/><text class="mt" x="50.0" y="20.5">Retrieval</text></g><g class="tipt" tabindex="0" data-tip-title="Tools" data-tip="The model selects the appropriate tools to fetch information or take actions."><rect class="mb g" x="8" y="46" width="84" height="28" rx="7"/><text class="mt" x="50.0" y="60.5">Tools</text></g><g class="tipt" tabindex="0" data-tip-title="Memory" data-tip="The model decides what information to retain for later steps."><rect class="mb g" x="8" y="86" width="84" height="28" rx="7"/><text class="mt" x="50.0" y="100.5">Memory</text></g><rect class="mb" x="170" y="32" width="90" height="56" rx="7"/><text class="mt" x="215.0" y="60.5">LLM</text><path class="ma two" d="M92 20H131V44H170"/><path class="ma two" d="M92 60H170"/><path class="ma two" d="M92 100H131V76H170"/></svg>
-          <div><h4>An LLM enhanced with retrieval, tools and memory</h4>
-          <p>The model actively directs these augmentations: it generates its own search queries, picks tools and decides what to remember.</p></div></div>
+        <h3>Characteristics <small>what an agent does</small></h3>
+        <div class="tgrid"><div class="item trait"><h4>Autonomy</h4><p>Operates without direct human intervention and controls its own actions: the LLM directs its own process and tool use.</p><p class="by">Wooldridge &amp; Jennings 1995 · Anthropic 2024</p></div><div class="item trait"><h4>Goal-directed</h4><p>Takes the initiative toward a goal instead of only reacting, and accomplishes the task on the user's behalf.</p><p class="by">Wooldridge &amp; Jennings 1995 · OpenAI 2025</p></div><div class="item trait"><h4>Perceives its environment</h4><p>Senses the environment and responds to changes; each step brings ground truth, such as tool results or code output.</p><p class="by">Wooldridge &amp; Jennings 1995 · Anthropic 2024</p></div><div class="item trait"><h4>Acts through tools</h4><p>Uses tools to gather context and to take actions, choosing the right one for the current state of the workflow.</p><p class="by">OpenAI 2025 · Schick et al. 2023</p></div><div class="item trait"><h4>Reasons and plans</h4><p>Interleaves reasoning with acting, breaks tasks into steps, reflects on past actions and corrects course.</p><p class="by">Yao et al. 2022 · Weng 2023</p></div><div class="item trait"><h4>Social ability</h4><p>Interacts with other agents and humans: delegates, collaborates, hands off, and returns control when it cannot finish.</p><p class="by">Wooldridge &amp; Jennings 1995 · Tomašev et al. 2026</p></div></div>
       </div>
+      <div class="band">
+        <h3>Building blocks <small>what an agent is made of</small></h3>
+        <div class="item diag"><svg viewBox="-8 0 960 290"><rect class="node dash" x="4" y="20" width="712" height="250" rx="20" style="fill:none;stroke:var(--accent)"/><rect class="node" x="22" y="50" width="676" height="190" rx="16" style="fill:none"/><text class="ml" x="38" y="72" style="text-anchor:start">AGENT</text><g class="tipt" tabindex="0" data-tip-title="Guardrails" data-tip="Layered checks around the agent: relevance and safety classifiers, PII filters, moderation, rules-based protections and risk ratings for tools."><rect class="mb g" x="30" y="7" width="120" height="26" rx="9"/><text class="mt" x="90.0" y="20.5">Guardrails</text></g><g class="tipt" tabindex="0" data-tip-title="Instructions" data-tip="Explicit guidelines that define how the agent behaves. Best built from existing procedures, with clear actions and the edge cases spelled out."><rect class="mb g" x="44" y="85" width="150" height="40" rx="9"/><text class="mt" x="119.0" y="105.5">Instructions</text></g><g class="tipt" tabindex="0" data-tip-pos="below" data-tip-title="Memory" data-tip="The model decides what information to retain: short-term context for the current task, plus long-term storage it can retrieve from later."><rect class="mb g" x="44" y="165" width="150" height="40" rx="9"/><text class="mt" x="119.0" y="185.5">Memory</text></g><g class="tipt" tabindex="0" data-tip-title="LLM" data-tip="The model that reasons and decides: it plans the next step, selects tools and recognizes when the work is done."><rect class="mb" x="272" y="105" width="176" height="80" rx="9"/><text class="mt" x="360.0" y="137.0" style="font-size:16px;font-weight:700">LLM</text><text class="mt" x="360.0" y="157.0" style="font-size:12px;fill:var(--muted)">reasons · plans · decides</text></g><path class="ma " d="M194 105H233V128H272"/><path class="ma two" d="M194 185H233V162H272"/><path class="ma two" d="M448 145H526"/><rect class="node" x="512" y="68" width="170" height="154" rx="12" style="fill:none"/><text class="ml" x="597" y="86">TOOLS</text><g class="tipt" tabindex="0" data-tip-title="Data tools" data-tip="Retrieve the context the task needs: the model writes its own queries to databases, documents or the web. Anthropic calls this retrieval."><rect class="mb g" x="526" y="90" width="142" height="30" rx="9"/><text class="mt" x="597.0" y="105.5">Data (retrieval)</text></g><g class="tipt" tabindex="0" data-tip-pos="left" data-tip-title="Action tools" data-tip="Let the agent change things: update a record, send a message, hand a ticket to a human."><rect class="mb g" x="526" y="130" width="142" height="30" rx="9"/><text class="mt" x="597.0" y="145.5">Action</text></g><g class="tipt" tabindex="0" data-tip-pos="below" data-tip-title="Orchestration tools" data-tip="Other agents exposed as tools, so one agent can delegate part of the work to another."><rect class="mb g" x="526" y="170" width="142" height="30" rx="9"/><text class="mt" x="597.0" y="185.5">Orchestration</text></g><g class="tipt" tabindex="0" data-tip-title="Environment" data-tip="What the agent acts on. At each step it returns ground truth, such as tool-call results or code execution output, so the agent can assess its progress."><rect class="mb g" x="790" y="70" width="150" height="90" rx="9"/><text class="mt" x="865.0" y="115.5">Environment</text></g><g class="tipt" tabindex="0" data-tip-pos="below" data-tip-title="Other agents" data-tip="Agents the work can be delegated to, either as tools called by a manager or through handoffs between peers."><rect class="mb g" x="790" y="172" width="150" height="48" rx="9"/><text class="mt" x="865.0" y="196.5">Other agents</text></g><path class="ma " d="M790 105H668"/><path class="ma " d="M668 145H790"/><path class="ma two" d="M668 185H790"/><text class="ml" x="753" y="99">READ</text><text class="ml" x="753" y="139">ACT</text><text class="ml" x="753" y="179">DELEGATE</text><text class="ml" x="360" y="228">LOOP: PLAN · ACT · OBSERVE</text></svg></div>
+        <p class="note">An agent is an LLM that reasons and decides, guided by instructions and memory, acting on its environment and on other agents through tools, all inside guardrails.</p>
+      </div>
+    </div>
+    <footer class="refs" style="--rd:0.6s">
+      <h3>References</h3>
+      <ol>
+        <li>Wooldridge, M., &amp; Jennings, N. R. (1995). <a href="https://doi.org/10.1017/S0269888900008122" target="_blank" rel="noopener">Intelligent agents: Theory and practice</a>. <i>The Knowledge Engineering Review, 10</i>(2), 115–152.</li>
+        <li>Yao, S., et al. (2022). <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">ReAct: Synergizing reasoning and acting in language models</a>.</li>
+        <li>Schick, T., et al. (2023). <a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener">Toolformer: Language models can teach themselves to use tools</a>.</li>
+        <li>Park, J. S., et al. (2023). <a href="https://arxiv.org/abs/2304.03442" target="_blank" rel="noopener">Generative agents: Interactive simulacra of human behavior</a>.</li>
+        <li>Weng, L. (2023, June 23). <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank" rel="noopener">LLM powered autonomous agents</a>.</li>
+        <li>Wang, L., et al. (2023). <a href="https://arxiv.org/abs/2308.11432" target="_blank" rel="noopener">A survey on large language model based autonomous agents</a>.</li>
+        <li>Anthropic. (2024, December 19). <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>.</li>
+        <li>OpenAI. (2025). <a href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener">A practical guide to building agents</a>.</li>
+        <li>Tomašev, N., Franklin, M., &amp; Osindero, S. (2026). <a href="https://arxiv.org/abs/2602.11865" target="_blank" rel="noopener">Intelligent AI delegation</a>. Google DeepMind.</li>
+      </ol>
+    </footer>
+  </div>
+</section>
+
+<section class="slide blocks fit flows">
+  <div class="inner">
+    <h2>Workflows and Agents</h2>
+    <div class="stage">
       <div class="band">
         <h3>Workflows <small>LLMs and tools orchestrated through predefined code paths</small></h3>
         <div class="wf">
@@ -259,16 +294,26 @@
           <div class="item"><svg viewBox="0 0 240 100"><g class="tipt" tabindex="0" data-tip-title="Orchestrator" data-tip="A central LLM that dynamically breaks the task into subtasks, delegates them to workers and synthesizes their results. Suits tasks whose subtasks can&#x27;t be predicted, e.g. changes across many files."><rect class="mb" x="66" y="6" width="108" height="26" rx="7"/><text class="mt" x="120.0" y="19.5">Orchestrator</text></g><path class="ma " d="M96 32V48H40V68"/><path class="ma " d="M120 32V68"/><path class="ma " d="M144 32V48H200V68"/><g class="tipt" tabindex="0" data-tip-title="Worker" data-tip="An LLM that carries out one subtask delegated by the orchestrator and returns the result for synthesis."><rect class="mb" x="8" y="68" width="64" height="26" rx="7"/><text class="mt" x="40.0" y="81.5">Worker</text></g><g class="tipt" tabindex="0" data-tip-title="Worker" data-tip="An LLM that carries out one subtask delegated by the orchestrator and returns the result for synthesis."><rect class="mb" x="88" y="68" width="64" height="26" rx="7"/><text class="mt" x="120.0" y="81.5">Worker</text></g><g class="tipt" tabindex="0" data-tip-title="Worker" data-tip="An LLM that carries out one subtask delegated by the orchestrator and returns the result for synthesis."><rect class="mb" x="168" y="68" width="64" height="26" rx="7"/><text class="mt" x="200.0" y="81.5">Worker</text></g></svg><h4>Orchestrator-workers</h4><p>A central LLM breaks the task down, delegates to workers and synthesizes.</p><p><b>Use when:</b> subtasks can't be predicted in advance</p></div>
           <div class="item"><svg viewBox="0 0 240 100"><g class="tipt" tabindex="0" data-tip-title="Generator" data-tip="The LLM that produces a response (e.g. a translation draft), then revises it using the evaluator&#x27;s feedback."><rect class="mb" x="8" y="37" width="84" height="26" rx="7"/><text class="mt" x="50.0" y="50.5">Generator</text></g><g class="tipt" tabindex="0" data-tip-title="Evaluator" data-tip="Another LLM that critiques the generator&#x27;s output in a loop. Works best when there are clear evaluation criteria."><rect class="mb" x="148" y="37" width="84" height="26" rx="7"/><text class="mt" x="190.0" y="50.5">Evaluator</text></g><path class="ma " d="M50 37C50 2 190 2 190 37"/><path class="ma " d="M190 63C190 98 50 98 50 63"/><text class="ml" x="120" y="34">OUTPUT</text><text class="ml" x="120" y="72">FEEDBACK</text></svg><h4>Evaluator-optimizer</h4><p>One LLM generates, another evaluates, in a loop.</p><p><b>Use when:</b> clear criteria make refinement pay off</p></div>
         </div>
+        <p class="note">OpenAI draws the same line: apps that use an LLM but don't let it control workflow execution, such as simple chatbots, single-turn LLMs or sentiment classifiers, are not agents.</p>
       </div>
       <div class="band">
-        <h3>Agents <small>LLMs dynamically direct their own process and tool usage</small></h3>
-        <div class="item row"><svg viewBox="0 0 340 110"><rect class="mb" x="10" y="28" width="110" height="54" rx="7"/><text class="mt" x="65.0" y="55.5">LLM</text><g class="tipt" tabindex="0" data-tip-title="Environment" data-tip="What the agent acts on. At each step it returns ground truth, such as tool-call results or code execution output, so the agent can assess its progress."><rect class="mb" x="220" y="28" width="110" height="54" rx="7"/><text class="mt" x="275.0" y="55.5">Environment</text></g><path class="ma " d="M120 45H220"/><path class="ma " d="M220 65H120"/><text class="ml" x="170" y="36">ACTION</text><text class="ml" x="170" y="82">FEEDBACK</text></svg>
-          <div><h4>An LLM using tools based on feedback from the environment, in a loop</h4>
-          <p>At each step it gets ground truth from the environment (tool results, code execution), can pause for human feedback, and stops on a condition or limit.</p>
-          <p><b>Use when:</b> the problem is open-ended and the number of steps can't be predicted.</p></div></div>
+        <h3>Agents <small>LLMs dynamically direct their own process and tool usage, alone or as a team</small></h3>
+        <div class="wf four">
+          <div class="item"><svg viewBox="0 0 240 100"><rect class="mb" x="8" y="28" width="64" height="44" rx="7"/><text class="mt" x="40" y="50.5">LLM</text><g class="tipt" tabindex="0" data-tip-title="Environment" data-tip="What the agent acts on. At each step it returns ground truth, such as tool-call results or code execution output, so the agent can assess its progress."><rect class="mb" x="138" y="28" width="94" height="44" rx="7"/><text class="mt" x="185" y="50.5">Environment</text></g><path class="ma " d="M72 46H138"/><path class="ma " d="M138 62H72"/><text class="ml" x="105" y="37">ACTION</text><text class="ml" x="105" y="78">FEEDBACK</text></svg><h4>Single agent: the run loop</h4><p>An LLM uses tools on feedback from the environment, in a loop, until an exit condition: a final-output tool, a reply with no tool call, an error or a turn limit.</p><p><b>Use when:</b> steps can't be predicted. Start with one agent; add more only when it struggles with complex logic or too many similar tools.</p></div>
+          <div class="item"><svg viewBox="0 0 240 100"><g class="tipt" tabindex="0" data-tip-title="Manager" data-tip="A central agent that coordinates specialized agents through tool calls. It stays in control of the workflow and is the only one that talks to the user."><rect class="mb" x="6" y="30" width="76" height="40" rx="7"/><text class="mt" x="44.0" y="50.5">Manager</text></g><path class="ma two" d="M82 50H112V18H150"/><path class="ma two" d="M82 50H150"/><path class="ma two" d="M82 50H112V82H150"/><g class="tipt" tabindex="0" data-tip-title="Specialized agent" data-tip="Exposed to the manager as a tool; handles one task or domain and returns its result."><rect class="mb" x="150" y="6" width="84" height="24" rx="7"/><text class="mt" x="192.0" y="18.5">Agent A</text></g><g class="tipt" tabindex="0" data-tip-title="Specialized agent" data-tip="Exposed to the manager as a tool; handles one task or domain and returns its result."><rect class="mb" x="150" y="38" width="84" height="24" rx="7"/><text class="mt" x="192.0" y="50.5">Agent B</text></g><g class="tipt" tabindex="0" data-tip-title="Specialized agent" data-tip="Exposed to the manager as a tool; handles one task or domain and returns its result."><rect class="mb" x="150" y="70" width="84" height="24" rx="7"/><text class="mt" x="192.0" y="82.5">Agent C</text></g></svg><h4>Manager: agents as tools</h4><p>A central agent coordinates specialized agents through tool calls and keeps control of the workflow and the user.</p><p><b>Use when:</b> one agent should own the workflow and the conversation.</p></div>
+          <div class="item"><svg viewBox="0 0 240 100"><g class="tipt" tabindex="0" data-tip-title="Triage agent" data-tip="The first point of contact: assesses the request and hands the workflow off to the right specialist agent."><rect class="mb" x="70" y="4" width="100" height="26" rx="7"/><text class="mt" x="120.0" y="17.5">Triage</text></g><g class="tipt" tabindex="0" data-tip-title="Peer agent" data-tip="Takes over execution and the conversation with the user after a handoff, and can hand off again."><rect class="mb" x="8" y="70" width="84" height="26" rx="7"/><text class="mt" x="50.0" y="83.5">Sales</text></g><g class="tipt" tabindex="0" data-tip-title="Peer agent" data-tip="Takes over execution and the conversation with the user after a handoff, and can hand off again."><rect class="mb" x="148" y="70" width="84" height="26" rx="7"/><text class="mt" x="190.0" y="83.5">Orders</text></g><path class="ma " d="M95 30L52 70"/><path class="ma " d="M145 30L188 70"/><path class="ma two" d="M92 83H148"/></svg><h4>Decentralized: handoffs</h4><p>Peer agents pass execution to one another. A handoff is a one-way transfer of control and conversation state.</p><p><b>Use when:</b> no single agent needs central control; specialists can take over the user.</p></div>
+          <div class="item"><svg viewBox="0 0 240 100"><rect class="mb" x="2" y="22" width="42" height="24" rx="7"/><text class="mt" x="23.0" y="34.5">Input</text><path class="ma " d="M44 34H56"/><g class="tipt" tabindex="0" data-tip-title="Guardrails" data-tip="Layered checks that run alongside the agent: relevance and safety classifiers, PII filters, moderation, rules-based protections and risk ratings for each tool."><rect class="mb g" x="56" y="10" width="68" height="48" rx="7"/><text class="mt" x="90" y="34.5">Guardrails</text></g><path class="ma " d="M124 34H140"/><rect class="mb" x="140" y="22" width="56" height="24" rx="7"/><text class="mt" x="168.0" y="34.5">Agent</text><path class="ma " d="M196 34H230"/><path class="ma " d="M168 46V70"/><text class="ml" x="176" y="61" style="text-anchor:start">ESCALATE</text><g class="tipt" tabindex="0" data-tip-title="Human oversight" data-tip="Takes over when the agent exceeds a failure threshold or faces a high-risk action, such as a large refund or a payment."><rect class="mb g" x="128" y="70" width="80" height="24" rx="7"/><text class="mt" x="178.0" y="82.5">Human</text></g></svg><h4>Guardrails and human oversight</h4><p>Layered checks run alongside the agent: relevance and safety classifiers, PII filters, moderation, rules and risk ratings on tools.</p><p><b>Use when:</b> always. Escalate to a human after repeated failures or before high-risk actions such as payments.</p></div>
+        </div>
       </div>
     </div>
-    <p class="srcline">Source: Anthropic (2024). <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>.</p>
+    <footer class="refs" style="--rd:0.6s">
+      <h3>References</h3>
+      <ol>
+        <li>Anthropic. (2024, December 19). <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building effective agents</a>.</li>
+        <li>OpenAI. (2025). <a href="https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf" target="_blank" rel="noopener">A practical guide to building agents</a>.</li>
+        <li>Yao, S., et al. (2022). <a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener">ReAct: Synergizing reasoning and acting in language models</a>.</li>
+      </ol>
+    </footer>
   </div>
 </section>
 
@@ -321,7 +366,7 @@
 
 
   // Shrink the dense slides just enough to fit the window (no scrolling while presenting).
-  const fitted = [".defs", ".blocks"].map(sel => document.querySelector(sel));
+  const fitted = [...document.querySelectorAll(".slide.fit")];
   function fit() {
     fitted.forEach(slide => {
       const inner = slide.querySelector(".inner");
@@ -376,24 +421,45 @@
   function showBubble(el) {
     const b = document.createElement("b"); b.textContent = el.dataset.tipTitle;
     bubble.replaceChildren(b, el.dataset.tip);
-    bubble.classList.remove("below");
+    bubble.classList.remove("below", "left");
     const r = el.getBoundingClientRect(), w = bubble.offsetWidth, h = bubble.offsetHeight, cx = r.left + r.width / 2;
-    const left = Math.max(8, Math.min(innerWidth - w - 8, cx - w / 2));
-    const below = r.top - h - 14 < 8;
-    bubble.classList.toggle("below", below);
-    bubble.style.left = left + "px";
-    bubble.style.top = (below ? r.bottom + 12 : r.top - h - 12) + "px";
-    bubble.style.setProperty("--ax", (cx - left) + "px");
+    const noRoomAbove = r.top - h - 14 < 8, noRoomBelow = r.bottom + h + 14 > innerHeight - 8;
+    const wantLeft = el.dataset.tipPos === "left" && r.left - w - 14 >= 8;
+    if (wantLeft) {                                    // beside the box, arrow pointing right at it
+      const top = Math.max(8, Math.min(innerHeight - h - 8, r.top + r.height / 2 - h / 2));
+      bubble.classList.add("left");
+      bubble.style.left = (r.left - w - 12) + "px";
+      bubble.style.top = top + "px";
+      bubble.style.setProperty("--ay", (r.top + r.height / 2 - top) + "px");
+    } else {                                           // above the box, or below it (no room above / asked for)
+      const left = Math.max(8, Math.min(innerWidth - w - 8, cx - w / 2));
+      const below = el.dataset.tipPos === "below" ? !noRoomBelow || noRoomAbove : noRoomAbove;
+      bubble.classList.toggle("below", below);
+      bubble.style.left = left + "px";
+      bubble.style.top = (below ? r.bottom + 12 : r.top - h - 12) + "px";
+      bubble.style.setProperty("--ax", (cx - left) + "px");
+    }
     bubble.classList.add("on");
   }
-  const hideBubble = () => bubble.classList.remove("on");
+  // The bubble stays open while the pointer is over the box or the bubble, and once you press inside it
+  // (to select its text) it stays until you click elsewhere.
+  let hideTimer = 0, pinned = false;
+  const hideBubble = () => { clearTimeout(hideTimer); pinned = false; bubble.classList.remove("on"); };
+  const softHide = () => { clearTimeout(hideTimer); if (!pinned) hideTimer = setTimeout(hideBubble, 200); };
+  const keepBubble = () => clearTimeout(hideTimer);
   document.querySelectorAll(".tipt").forEach(el => {
-    el.addEventListener("mouseenter", () => showBubble(el));
-    el.addEventListener("focus", () => showBubble(el));
-    el.addEventListener("mouseleave", hideBubble);
-    el.addEventListener("blur", hideBubble);
+    el.addEventListener("mouseenter", () => { keepBubble(); pinned = false; showBubble(el); });
+    el.addEventListener("focus", () => { keepBubble(); pinned = false; showBubble(el); });
+    el.addEventListener("mouseleave", softHide);
+    el.addEventListener("blur", softHide);
   });
-  addEventListener("keydown", hideBubble);
+  bubble.addEventListener("mouseenter", keepBubble);
+  bubble.addEventListener("mouseleave", softHide);
+  bubble.addEventListener("mousedown", () => { pinned = true; keepBubble(); });
+  document.addEventListener("mousedown", e => {
+    if (!bubble.contains(e.target) && !e.target.closest(".tipt")) hideBubble();
+  });
+  addEventListener("keydown", e => { if (!pinned && !e.metaKey && !e.ctrlKey) hideBubble(); });
 
   function toggleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen();
