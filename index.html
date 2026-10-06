@@ -39,6 +39,12 @@
     will-change: transform; animation: forward var(--t) linear infinite; }
   .sky .low  { --t: 52s; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%271024%27%20height%3D%271024%27%3E%3Cfilter%20id%3D%27f%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%20color-interpolation-filters%3D%27sRGB%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.0045%200.0045%27%20numOctaves%3D%274%27%20seed%3D%2711%27%20stitchTiles%3D%27stitch%27%20result%3D%27n%27%2F%3E%3CfeColorMatrix%20in%3D%27n%27%20type%3D%27matrix%27%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%204.2%200%200%200%20-1.55%27%20result%3D%27m%27%2F%3E%3CfeDiffuseLighting%20in%3D%27n%27%20surfaceScale%3D%2710%27%20diffuseConstant%3D%271.15%27%20lighting-color%3D%27%23fff%27%20result%3D%27l%27%3E%3CfeDistantLight%20azimuth%3D%27235%27%20elevation%3D%2748%27%2F%3E%3C%2FfeDiffuseLighting%3E%3CfeColorMatrix%20in%3D%27l%27%20type%3D%27matrix%27%20values%3D%270.5%200%200%200%200.36%20%200%200.5%200%200%200.38%20%200%200%200.45%200%200.44%20%200%200%200%200%201%27%20result%3D%27c%27%2F%3E%3CfeComposite%20in%3D%27c%27%20in2%3D%27m%27%20operator%3D%27in%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23f%29%27%2F%3E%3C%2Fsvg%3E"); opacity: .9; }
   .sky .deck { --t: 26s; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%271024%27%20height%3D%271024%27%3E%3Cfilter%20id%3D%27f%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%20color-interpolation-filters%3D%27sRGB%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.0055%200.0055%27%20numOctaves%3D%275%27%20seed%3D%275%27%20stitchTiles%3D%27stitch%27%20result%3D%27n%27%2F%3E%3CfeColorMatrix%20in%3D%27n%27%20type%3D%27matrix%27%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%204.6%200%200%200%20-1.85%27%20result%3D%27m%27%2F%3E%3CfeDiffuseLighting%20in%3D%27n%27%20surfaceScale%3D%2720%27%20diffuseConstant%3D%271.15%27%20lighting-color%3D%27%23fff%27%20result%3D%27l%27%3E%3CfeDistantLight%20azimuth%3D%27235%27%20elevation%3D%2748%27%2F%3E%3C%2FfeDiffuseLighting%3E%3CfeColorMatrix%20in%3D%27l%27%20type%3D%27matrix%27%20values%3D%270.62%200%200%200%200.42%20%200%200.62%200%200%200.44%20%200%200%200.558%200%200.5%20%200%200%200%200%201%27%20result%3D%27c%27%2F%3E%3CfeComposite%20in%3D%27c%27%20in2%3D%27m%27%20operator%3D%27in%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23f%29%27%2F%3E%3C%2Fsvg%3E"); }
+  /* lite sky: the 3D cloud plane and blend layers need big GPU textures, which flicker on battery power; drop them (auto on battery, L toggles) */
+  body.lite .sky .plane, body.lite .sky .zoom { display: none; }
+  body.lite .sky .fly { animation: none; }
+  body.lite .w { filter: none; }
+  body.lite:not(.on-defs) .slide.title { text-shadow: 0 1px 6px rgba(0,0,0,.4); }
+  body.lite .sky .ground::before, body.lite .sky .ground i { display: none; }
   .sky .haze { position: absolute; left: 0; right: 0; top: calc(var(--hz) - 9vh); height: 18vh;
     background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--hz-col) 92%, transparent) 50%, transparent); }
   .sky .ground::before { content: ""; position: absolute; inset: 0; z-index: 2; mix-blend-mode: multiply; background: var(--tint); }
@@ -1053,6 +1059,21 @@
     else if (e.key === "-") lbZoom(lbScale / 1.25);
     else if (e.key === "0") lbReset();
   }, true);
+</script>
+<script>
+  // Lite sky on battery (Chrome only; elsewhere use L): avoids GPU texture flicker.
+  (() => {
+    const set = on => document.body.classList.toggle("lite", on);
+    let manual = false;
+    if (navigator.getBattery) navigator.getBattery().then(b => {
+      const sync = () => { if (!manual) set(!b.charging); };
+      sync(); b.addEventListener("chargingchange", sync);
+    }).catch(() => {});
+    addEventListener("keydown", e => {
+      if (e.key.toLowerCase() !== "l" || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+      manual = true; set(!document.body.classList.contains("lite"));
+    });
+  })();
 </script>
 </body>
 </html>
