@@ -23,7 +23,7 @@ A single-file HTML slide deck on how "agent" has been defined, what makes an age
 | `N` | Presenter script and notes pad, shown over the slide |
 | `S` | Presenter window: script, notes pad, next slide title, timers, Prev/Next |
 
-The URL hash (`#3`) holds the current slide. The theme (Light, Dark, System) and the title-slide sky follow the viewer's settings; `?time=18.5` previews a time of day.
+The URL hash (`#3`) holds the current slide. The theme (Light, Dark, System) and the title-slide sky follow the viewer's settings; `?time=18.5` previews a time of day and `?date=2026-10-24` a moon phase (the moon shows the real phase of the day and rises and sets accordingly: it is drawn only after sunset and before sunrise, so a crescent shows near dusk or dawn and a full moon late at night). **L** toggles lite mode (still clouds), which also turns on by itself on battery in Chrome and Edge.
 
 ## Presenter scripts and notes
 

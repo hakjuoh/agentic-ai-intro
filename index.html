@@ -30,50 +30,23 @@
       radial-gradient(40vmax 32vmax at var(--mx) var(--my), var(--mglow), transparent 70%),
       linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 42%, var(--hz-col) var(--hz)); }
   body.on-defs .sky { opacity: 0; }
-  .sky .fly { position: absolute; inset: 0; animation: bob 9s ease-in-out infinite alternate; }
-  .sky .ground { position: absolute; left: -10vw; right: -10vw; top: calc(var(--hz) - 2px); bottom: -6vh; overflow: hidden;
-    perspective: 520px; perspective-origin: 50% 0; background: linear-gradient(to bottom, #bddbf4, #8db9e6 40%, #6fa3d9); }
-  .sky .plane { position: absolute; left: 50%; bottom: 0; width: 500vw; height: 2600px; margin-left: -250vw; overflow: hidden;
-    transform-origin: 50% 100%; transform: rotateX(84deg); }
-  .sky .scroll { position: absolute; left: 0; right: 0; top: -1024px; bottom: 0; background-size: 1024px 1024px;
-    will-change: transform; animation: forward var(--t) linear infinite; }
-  .sky .low  { --t: 52s; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%271024%27%20height%3D%271024%27%3E%3Cfilter%20id%3D%27f%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%20color-interpolation-filters%3D%27sRGB%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.0045%200.0045%27%20numOctaves%3D%274%27%20seed%3D%2711%27%20stitchTiles%3D%27stitch%27%20result%3D%27n%27%2F%3E%3CfeColorMatrix%20in%3D%27n%27%20type%3D%27matrix%27%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%204.2%200%200%200%20-1.55%27%20result%3D%27m%27%2F%3E%3CfeDiffuseLighting%20in%3D%27n%27%20surfaceScale%3D%2710%27%20diffuseConstant%3D%271.15%27%20lighting-color%3D%27%23fff%27%20result%3D%27l%27%3E%3CfeDistantLight%20azimuth%3D%27235%27%20elevation%3D%2748%27%2F%3E%3C%2FfeDiffuseLighting%3E%3CfeColorMatrix%20in%3D%27l%27%20type%3D%27matrix%27%20values%3D%270.5%200%200%200%200.36%20%200%200.5%200%200%200.38%20%200%200%200.45%200%200.44%20%200%200%200%200%201%27%20result%3D%27c%27%2F%3E%3CfeComposite%20in%3D%27c%27%20in2%3D%27m%27%20operator%3D%27in%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23f%29%27%2F%3E%3C%2Fsvg%3E"); opacity: .9; }
-  .sky .deck { --t: 26s; background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%271024%27%20height%3D%271024%27%3E%3Cfilter%20id%3D%27f%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%20color-interpolation-filters%3D%27sRGB%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.0055%200.0055%27%20numOctaves%3D%275%27%20seed%3D%275%27%20stitchTiles%3D%27stitch%27%20result%3D%27n%27%2F%3E%3CfeColorMatrix%20in%3D%27n%27%20type%3D%27matrix%27%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%204.6%200%200%200%20-1.85%27%20result%3D%27m%27%2F%3E%3CfeDiffuseLighting%20in%3D%27n%27%20surfaceScale%3D%2720%27%20diffuseConstant%3D%271.15%27%20lighting-color%3D%27%23fff%27%20result%3D%27l%27%3E%3CfeDistantLight%20azimuth%3D%27235%27%20elevation%3D%2748%27%2F%3E%3C%2FfeDiffuseLighting%3E%3CfeColorMatrix%20in%3D%27l%27%20type%3D%27matrix%27%20values%3D%270.62%200%200%200%200.42%20%200%200.62%200%200%200.44%20%200%200%200.558%200%200.5%20%200%200%200%200%201%27%20result%3D%27c%27%2F%3E%3CfeComposite%20in%3D%27c%27%20in2%3D%27m%27%20operator%3D%27in%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23f%29%27%2F%3E%3C%2Fsvg%3E"); }
-  /* lite sky: the 3D cloud plane and blend layers need big GPU textures, which flicker on battery power; drop them (auto on battery, L toggles) */
-  body.lite .sky .plane, body.lite .sky .zoom { display: none; }
-  body.lite .sky .fly { animation: none; }
+  /* clouds are one WebGL canvas (script at the end); lite = still frame, no animation. Auto on battery (Chrome/Edge), L toggles. Fallback ground when WebGL is missing */
+  .sky canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .sky .ground { position: absolute; left: 0; right: 0; top: var(--hz); bottom: 0; display: none;
+    background: linear-gradient(to bottom, var(--hz-col), #8db9e6 30%, #6fa3d9); }
+  body.nogl .sky .ground { display: block; } body.nogl .sky canvas { display: none; }
+  .sky .moon { display: none; } body.nogl .sky .moon { display: block; }
   body.lite .w { filter: none; }
   body.lite:not(.on-defs) .slide.title { text-shadow: 0 1px 6px rgba(0,0,0,.4); }
-  body.lite .sky .ground::before, body.lite .sky .ground i { display: none; }
   .sky .haze { position: absolute; left: 0; right: 0; top: calc(var(--hz) - 9vh); height: 18vh;
     background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--hz-col) 92%, transparent) 50%, transparent); }
-  .sky .ground::before { content: ""; position: absolute; inset: 0; z-index: 2; mix-blend-mode: multiply; background: var(--tint); }
-  .sky .ground i { position: absolute; inset: 0; z-index: 3; mix-blend-mode: screen;
-    background: radial-gradient(60vmax 22vh at var(--sx) 0, var(--glow), transparent 75%), radial-gradient(45vmax 20vh at var(--mx) 0, var(--mglow), transparent 75%); }
-  .sky .ground::after { content: ""; position: absolute; inset: 0; z-index: 4; background: linear-gradient(to bottom, var(--hz-col) 0, color-mix(in srgb, var(--hz-col) 85%, transparent) 12%, transparent 55%); }
-  .sky .zoom { position: absolute; left: -20vw; right: -20vw; top: 16vh; height: 40vh; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%271024%27%20height%3D%271024%27%3E%3Cfilter%20id%3D%27f%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.004%200.004%27%20numOctaves%3D%274%27%20seed%3D%2714%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%270%200%200%200%201%20%200%200%200%200%201%20%200%200%200%200%201%20%203.6%200%200%200%20-1.7%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url%28%23f%29%27%2F%3E%3C%2Fsvg%3E") center / 1024px 1024px;
-    transform-origin: 50% 100%; opacity: 0; animation: zoom 36s linear infinite; animation-delay: var(--dl);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent); }
-  .sky .wisps { position: absolute; inset: 0; filter: brightness(var(--wb)); }
   .sky .star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff; opacity: var(--o, .8); animation: tw 4s ease-in-out infinite alternate; animation-delay: var(--d); }
   .sky .stars { position: absolute; left: 0; right: 0; top: 0; height: var(--hz); opacity: var(--starop); }
   .sky .sun { position: absolute; left: var(--sx); top: var(--sy); width: 16vmin; height: 16vmin; transform: translate(-50%, -50%); border-radius: 50%; opacity: var(--sunop);
     background: radial-gradient(circle, #fff 0, #fff 14%, var(--suncol) 24%, color-mix(in srgb, var(--suncol) 45%, transparent) 40%, transparent 68%); }
   .sky .moon { position: absolute; left: var(--mx); top: var(--my); width: 7vmin; height: 7vmin; transform: translate(-50%, -50%); border-radius: 50%; opacity: var(--moonop);
     background: radial-gradient(circle at 36% 34%, #fff 0, #eef1ff 55%, #c9d0ee 100%); box-shadow: 0 0 3vmin 1vmin rgba(190,205,255,.45), 0 0 12vmin 4vmin rgba(150,170,255,.25); }
-  /* invisible handle on the sun (or the moon at night): drag it sideways to change the time of day, slide 1 only */
-  .grab { position: fixed; left: var(--gx, 50%); top: var(--gy, 50%); width: var(--gs, 14vmin); height: var(--gs, 14vmin); transform: translate(-50%, -50%);
-    border-radius: 50%; z-index: 25; cursor: grab; touch-action: none; }
-  .grab.drag { cursor: grabbing; }
-  body.on-defs .grab { display: none; }
-  .grab::after { content: "drag me \00b7  T = time-lapse \00b7  dbl-click = now"; position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); white-space: nowrap;
-    font-size: 12px; color: var(--hint-ink, #fff); opacity: 0; pointer-events: none; animation: grabhint .8s 3s forwards; }
-  .grab.used::after { display: none; }
-  @keyframes grabhint { to { opacity: .8; } }
   @keyframes tw { to { opacity: calc(var(--o, .8) * .35); } }
-  @keyframes forward { to { transform: translateY(1024px); } }
-  @keyframes zoom { 0% { transform: scale(.6); opacity: 0; } 20% { opacity: .35; } 100% { transform: scale(2.2); opacity: 0; } }
-  @keyframes bob { from { transform: translateY(-4px); } to { transform: translateY(6px); } }
   body:not(.on-defs) .slide.title { color: #fff; text-shadow: 0 2px 24px rgba(0,0,0,.45); }
   body:not(.on-defs) .slide.title .accent { color: #a9d2ff; }
   /* controls over the sky: the ink colour is chosen from the brightness of the clouds behind them (set by the script below) */
@@ -310,7 +283,6 @@
   @media (max-width: 1100px) { .stages { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 760px) { .stages { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) {
-    .sky .scroll, .sky .zoom, .sky .fly { animation: none !important; }
     body::before { animation: none; }
     .year .tip { transition: none; }
     .w, .card, .src, .refs { opacity: 1 !important; transform: none !important; filter: none !important; animation: none !important; }
@@ -332,8 +304,7 @@
 </style>
 </head>
 <body>
-<div class="sky" aria-hidden="true"><div class="stars"></div><div class="sun"></div><div class="moon"></div><div class="fly"><div class="wisps"><div class="zoom" style="--dl:0s"></div><div class="zoom" style="--dl:-18s"></div></div><div class="ground"><div class="plane"><div class="scroll low"></div></div><div class="plane"><div class="scroll deck"></div></div><i></i></div></div><div class="haze"></div></div></div>
-<div class="grab" title="Drag to change the time of day (double-click: back to now)"></div>
+<div class="sky" aria-hidden="true"><div class="stars"></div><div class="sun"></div><div class="moon"></div><canvas class="clouds"></canvas><div class="ground"></div><div class="haze"></div></div></div>
 <section class="slide title active" data-reveal="title">
   <div class="inner"><h1><span class="accent">Autonomy</span> in AI Agents:<br>Concepts and Practice</h1></div>
   <aside class="notes">
@@ -905,6 +876,14 @@
     if (m) return parseFloat(m[1]) + (m[2] ? m[2] / 60 : 0) + (m[3] ? parseFloat(m[3]) : 0);
     const d = new Date(); return d.getHours() + d.getMinutes() / 60;
   }
+  // Moon phase 0..1 (0 new, .25 first quarter, .5 full, .75 last quarter) from the date; ?date=2026-10-29 previews another day.
+  const SYNODIC = 29.530588853, NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
+  function moonAge() {
+    const m = /[?&]date=(\d{4})-(\d{1,2})-(\d{1,2})/.exec(location.search);
+    const at = m ? Date.UTC(+m[1], m[2] - 1, +m[3], 20) : Date.now();       // a previewed day is taken at 20:00 UTC
+    const a = (at - NEW_MOON) / 864e5 / SYNODIC;
+    return a - Math.floor(a);
+  }
   function effectiveHour() {
     let t = currentHour();
     // a forced Light/Dark choice that disagrees with the real time of day moves the sky 12 hours (day <-> night)
@@ -916,15 +895,17 @@
   function update() {
     const dark = isDark();
     const t = effectiveHour();
-    const sun = pos(t - 6), moon = pos(((t - 18) % 24 + 24) % 24);
+    const age = moonAge(), illum = (1 - Math.cos(2 * Math.PI * age)) / 2;
+    const sun = pos(t - 6), moon = pos(wrap24(t - 6 - age * 24));   // the moon lags the sun by age x 24 h: full = opposite, new = with it
     const p = palette(sun.e);
     const f = dark ? 1 - .2 * clamp((sun.e + 5) / 25, 0, 1) : 1;  // dark mode: a dimmer daytime
     const night = clamp((-sun.e - 3) / 10, 0, 1);
+    const moonUp = clamp((moon.e + 4) / 8, 0, 1) * night;   // only above the horizon and once the sun is down: not drawn in daylight
     const y = e => HZ - e / 65 * (HZ - TOP) + "vh";
     const set = (k, v) => sky.style.setProperty(k, v);
     set("--sky-top", rgb(p.top, f)); set("--sky-mid", rgb(p.mid, f)); set("--hz-col", rgb(p.hz, f));
     set("--tint", rgb(p.tint, f)); set("--suncol", rgb(p.sun)); set("--wb", p.wb * f);
-    set("--glow", rgba(p.glow, f)); set("--mglow", `rgba(150,170,255,${(.28 * night).toFixed(3)})`);
+    set("--glow", rgba(p.glow, f)); set("--mglow", `rgba(150,170,255,${(.28 * night * illum * moonUp).toFixed(3)})`);
     set("--sx", clamp(sun.x, -10, 110) + "%"); set("--sy", y(sun.e));
     set("--mx", clamp(moon.x, -10, 110) + "%"); set("--my", y(moon.e));
     // controls sit on the cloud sea: dark ink when it is bright, light ink when it is dark
@@ -934,48 +915,27 @@
     const root = document.documentElement.style, bright = lum > .3;
     root.setProperty("--hint-ink", bright ? "rgba(12,28,56,.78)" : "rgba(238,244,255,.85)");
     root.setProperty("--hint-on", bright ? "#0c1c38" : "#fff");
-    // the drag handle sits on whichever of sun / moon is up
-    const onSun = sun.e > -4, b = onSun ? sun : moon;
-    grab.style.setProperty("--gx", clamp(b.x, -10, 110) + "%"); grab.style.setProperty("--gy", y(b.e)); grab.style.setProperty("--gs", onSun ? "16vmin" : "9vmin");
     nowBtn.classList.toggle("show", exact);
-    set("--sunop", clamp((sun.e + 8) / 8, 0, 1)); set("--moonop", night); set("--starop", clamp((-sun.e - 6) / 12, 0, 1));
+    window.skyState = { tint: p.tint.map(v => v * f / 255), hz: p.hz.map(v => v * f / 255), sun: p.sun.map(v => v / 255),
+      glow: [...p.glow.slice(0, 3).map(v => v * f / 255), p.glow[3]], sx: clamp(sun.x, -10, 110) / 100, sy: (HZ - sun.e / 65 * (HZ - TOP)) / 100,
+      mx: clamp(moon.x, -10, 110) / 100, my: (HZ - moon.e / 65 * (HZ - TOP)) / 100, mglow: .28 * night * illum * moonUp, mop: moonUp, age,
+      sdx: (sun.x - moon.x) / 100, sdy: (HZ - moon.e / 65 * (HZ - TOP) - (HZ - sun.e / 65 * (HZ - TOP))) / 100 };   // moon -> sun, the way the lit side faces
+    dispatchEvent(new Event("skychange"));
+    set("--sunop", clamp((sun.e + 8) / 8, 0, 1)); set("--moonop", moonUp); set("--starop", clamp((-sun.e - 6) / 12, 0, 1));
   }
-  // Drag the sun sideways: it follows the pointer along its arc (80% of the width = 12 h) and keeps going into the night.
-  // T runs a 24 h time-lapse (about 20 s) from the current time; a drag, T again, or leaving slide 1 stops it.
-  const nowBtn = document.querySelector(".now"), grab = document.querySelector(".grab"), wrap24 = h => (h % 24 + 24) % 24;
+  // T runs a 24 h time-lapse (about 20 s) from the current time; T again, a click, or leaving slide 1 stops it.
+  const nowBtn = document.querySelector(".now"), wrap24 = h => (h % 24 + 24) % 24;
   let lapse = 0;
   const stopLapse = () => { cancelAnimationFrame(lapse); lapse = 0; };
   const backToNow = () => { stopLapse(); window.setSkyTime(null); };
-  let swallowUntil = 0, dragging = false;                          // the click that ends a drag / stops a time-lapse must not turn the slide
   const manual = h => { forced = wrap24(h); exact = true; update(); };
-  grab.addEventListener("pointerdown", e => {
-    e.preventDefault(); e.stopPropagation(); stopLapse(); dragging = true;
-    grab.setPointerCapture(e.pointerId); grab.classList.add("drag", "used");
-    const x0 = e.clientX, t0 = effectiveHour();
-    manual(t0);
-    // listen on the window so a release anywhere (even outside the page) ends the drag; a move with no button down is a missed release
-    const mv = ev => { if (ev.pointerId !== e.pointerId) return; if (ev.buttons === 0) end(); else manual(t0 + (ev.clientX - x0) / innerWidth * 15); };
-    const end = ev => {
-      if (ev && ev.pointerId !== e.pointerId) return;
-      grab.classList.remove("drag"); endDrag();
-      for (const t of ["pointermove", "pointerup", "pointercancel", "lostpointercapture"]) removeEventListener(t, t === "pointermove" ? mv : end, true);
-      if (grab.hasPointerCapture(e.pointerId)) grab.releasePointerCapture(e.pointerId);
-    };
-    addEventListener("pointermove", mv, true);
-    for (const t of ["pointerup", "pointercancel", "lostpointercapture"]) addEventListener(t, end, true);
-  });
-  grab.addEventListener("dblclick", e => { e.stopPropagation(); backToNow(); });
   nowBtn.addEventListener("click", e => { e.stopPropagation(); backToNow(); nowBtn.blur(); });
-  const endDrag = () => { if (dragging) { dragging = false; swallowUntil = performance.now() + 400; } };
-  addEventListener("pointerup", endDrag, true); addEventListener("pointercancel", endDrag, true); addEventListener("blur", endDrag);
-  addEventListener("click", e => {               // capture: runs before the slide-navigation click handler
-    if (dragging || performance.now() < swallowUntil || lapse) { e.stopImmediatePropagation(); e.preventDefault(); stopLapse(); }
+  addEventListener("click", e => {               // capture: the click that stops a time-lapse must not turn the slide
+    if (lapse) { e.stopImmediatePropagation(); e.preventDefault(); stopLapse(); }
   }, true);
   addEventListener("keydown", e => { if (e.key === "Escape" && exact && !document.body.classList.contains("on-defs") && lb.hidden) backToNow(); });
-  grab.addEventListener("click", e => e.stopPropagation());
   function toggleLapse() {
     if (lapse) return stopLapse();
-    grab.classList.add("used");
     let last = performance.now(), t = effectiveHour();
     const step = now => {
       if (document.body.classList.contains("on-defs")) return stopLapse();
@@ -1051,17 +1011,158 @@
   }, true);
 </script>
 <script>
-  // Lite sky on battery (Chrome only; elsewhere use L): avoids GPU texture flicker.
+  // Sky of slide 1: one WebGL canvas (fragment shader, half resolution) draws the puffy cumulus (a sea of clouds seen from above, flying forward)
+  // and the moon with the phase of the day. Lite mode, reduced motion, other
+  // slides and hidden tabs draw a still frame or nothing.
   (() => {
-    const set = on => document.body.classList.toggle("lite", on);
-    let manual = false;
+    const canvas = document.querySelector(".sky canvas"), body = document.body;
+    const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: "low-power" });
+    if (!gl) { body.classList.add("nogl"); return; }
+    const VS = "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+    const FS = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uRes; uniform float uTime, uHz, uSx, uSy, uMx, uMy, uMg, uMop, uAge;
+uniform vec2 uSdir; uniform vec3 uTint, uHzCol, uGlow, uSun; uniform float uGlowA;
+float h12(vec2 p){ vec3 q = fract(vec3(p.xyx) * .1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.-2.*f);
+  return mix(mix(h12(i), h12(i+vec2(1,0)), f.x), mix(h12(i+vec2(0,1)), h12(i+vec2(1,1)), f.x), f.y); }
+const mat2 R = mat2(.8, .6, -.6, .8);
+float fbm2(vec2 p){ float s = 0., a = .5; for (int k = 0; k < 2; k++) { s += a * vn(p); p = R * p * 2.07 + vec2(1.7, 9.2); a *= .5; } return s / .75; }
+float fbm4(vec2 p){ float s = 0., a = .5; for (int k = 0; k < 4; k++) { s += a * vn(p); p = R * p * 2.07 + vec2(1.7, 9.2); a *= .5; } return s / .9375; }
+// cumulus density: broad masses bent by a domain warp, split into rounded puffs by a ridged "billow" term
+float cumulus(vec2 p, vec2 drift, float seed){
+  vec2 w = vec2(fbm2(p * 1.3 + drift + seed), fbm2(p * 1.3 + drift + seed + 17.)) - .5;
+  p += w * .26;
+  float base = fbm4(p * 2.2 + drift);
+  float puff = fbm2(p * 6. + drift * .6 + 9.);                // rounded lumps on the masses
+  return base + .20 * (puff - .5);
+}
+// sunlit rim on the side facing the light, lavender shade on the other, warm cream where the light is strongest
+vec3 shade(float f, float fl, float thr, vec3 sunc){
+  float k = clamp(.5 + (f - fl) * 6. + (f - thr) * .6, 0., 1.);
+  vec3 lit = mix(vec3(.98, .97, 1.), sunc, .45);
+  return mix(vec3(.68, .72, .88), lit, k);
+}
+vec4 moon(){
+  float md = min(uRes.x, uRes.y), rad = .05 * md;
+  vec2 d = (gl_FragCoord.xy - vec2(uMx * uRes.x, (1. - uMy) * uRes.y)) / rad;
+  float r = length(d);
+  vec4 o = vec4(0.);
+  if (r < 1.03) {
+    float ph = 6.2831853 * uAge;                                // 0 new, .5 full
+    vec3 L = vec3(uSdir * abs(sin(ph)), -cos(ph));                // the lit limb faces the sun on screen
+    vec3 n = vec3(d, sqrt(max(1. - r * r, 0.)));
+    float lit = smoothstep(-.03, .06, dot(n, L));
+    float tex = fbm4(d * 2.6 + 5.);
+    float mar = smoothstep(.46, .62, tex);
+    vec3 surf = mix(vec3(.94, .95, .99), vec3(.66, .70, .83), mar * .7) * (.88 + .12 * vn(d * 20.));
+    float cr = vn(d * 9. + 3.); surf *= 1. - .10 * smoothstep(.55, .75, cr) * (1. - mar);
+    surf *= .72 + .28 * pow(max(n.z, 0.), .35);                  // limb darkening
+    float aa = 1.5 / rad, disc = 1. - smoothstep(1. - aa, 1., r);
+    float a = disc * lit;                                        // only the lit shape is drawn; the unlit side stays sky
+    o = vec4(surf * a, a);
+  }
+  return o * uMop;
+}
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes; float ty = 1. - uv.y; float asp = uRes.x / uRes.y;
+  vec4 outc = vec4(0.);
+  vec2 sunp = vec2((uSx - .5) * asp, uSy);
+  if (ty > uHz) {
+    float gh = 1.06 - uHz, t = (ty - uHz) / gh;
+    float d = (ty - uHz) / (1. - uHz);
+    float z = 1. / (d + .035);
+    vec2 w = vec2((uv.x - .5) * asp * z * 1.4, z * 1.1);
+    float lx = (uSx - .5) * .5;
+    vec2 pa = w * .55 + vec2(0., uTime * .06), pb = w * .90 + vec2(9.1, uTime * .13);
+    float fa = cumulus(pa, vec2(0., uTime * .01), 2.), fal = cumulus(pa + vec2(lx, -.07), vec2(0., uTime * .01), 2.);
+    float fb = cumulus(pb, vec2(0., uTime * .02), 7.), fbl = cumulus(pb + vec2(lx, -.07), vec2(0., uTime * .02), 7.);
+    float ca = smoothstep(.46, .58, fa), cb = smoothstep(.50, .61, fb);
+    vec3 base = mix(vec3(.72, .85, .96), vec3(.42, .60, .88), clamp(d * 1.3, 0., 1.));
+    vec3 col = mix(base, shade(fa, fal, .46, uSun) * .96, ca * .92);
+    col = mix(col, shade(fb, fbl, .50, uSun), cb);
+    col *= uTint;
+    float gy = ty - uHz;
+    float rs = length(vec2((uv.x - uSx) * uRes.x / (.60 * max(uRes.x, uRes.y)), gy / .22)) / .75;
+    float rm = length(vec2((uv.x - uMx) * uRes.x / (.45 * max(uRes.x, uRes.y)), gy / .20)) / .75;
+    vec3 g = uGlow * uGlowA * (1. - clamp(rs, 0., 1.)) + vec3(.588, .667, 1.) * uMg * (1. - clamp(rm, 0., 1.));
+    col = 1. - (1. - col) * (1. - g);
+    float f = t < .12 ? mix(1., .85, t / .12) : mix(.85, 0., clamp((t - .12) / .43, 0., 1.));
+    col = mix(col, uHzCol, f);
+    outc = vec4(col, 1.);
+  } else {
+    outc = moon();
+  }
+  gl_FragColor = outc;
+}`;
+    const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.warn(gl.getShaderInfoLog(gl.getAttachedShaders(prog)[1]) || gl.getProgramInfoLog(prog)); body.classList.add("nogl"); return; }
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, "a"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const U = n => gl.getUniformLocation(prog, n);
+    const SCALE = .5, HZ = .68, FPS = 30;
+    let last = 0, raf = 0, clock = 0;
+    function resize() {
+      const w = Math.max(1, Math.round(innerWidth * SCALE)), h = Math.max(1, Math.round(innerHeight * SCALE));
+      if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h); }
+    }
+    function draw() {
+      const s = window.skyState; if (!s) return;
+      resize();
+      gl.uniform2f(U("uRes"), canvas.width, canvas.height); gl.uniform1f(U("uTime"), clock); gl.uniform1f(U("uHz"), HZ);
+      gl.uniform1f(U("uSx"), s.sx); gl.uniform1f(U("uSy"), s.sy); gl.uniform1f(U("uMx"), s.mx); gl.uniform1f(U("uMy"), s.my);
+      gl.uniform1f(U("uMg"), s.mglow); gl.uniform1f(U("uMop"), s.mop); gl.uniform1f(U("uAge"), s.age);
+      { const v = [s.sdx * canvas.width / canvas.height, s.sdy], n = Math.hypot(v[0], v[1]) || 1; gl.uniform2f(U("uSdir"), v[0] / n, v[1] / n); }
+      gl.uniform3fv(U("uTint"), s.tint); gl.uniform3fv(U("uHzCol"), s.hz); gl.uniform3fv(U("uSun"), s.sun);
+      gl.uniform3fv(U("uGlow"), s.glow.slice(0, 3)); gl.uniform1f(U("uGlowA"), s.glow[3]);
+      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    const still = matchMedia("(prefers-reduced-motion: reduce)");
+    const animate = () => !body.classList.contains("on-defs") && !body.classList.contains("lite") && !document.hidden && !still.matches;
+    function frame(now) {
+      raf = 0; if (!animate()) return;
+      if (now - last >= 1000 / FPS - 2) { clock += (now - last) / 1000 * (last ? 1 : 0); last = now; draw(); }
+      raf = requestAnimationFrame(frame);
+    }
+    function sync() {
+      if (body.classList.contains("on-defs")) return;
+      draw();
+      if (animate() && !raf) { last = 0; raf = requestAnimationFrame(frame); }
+    }
+    addEventListener("skychange", sync);
+    addEventListener("resize", sync);
+    document.addEventListener("visibilitychange", sync);
+    new MutationObserver(sync).observe(body, { attributes: true, attributeFilter: ["class"] });
+    canvas.addEventListener("webglcontextlost", e => { e.preventDefault(); body.classList.add("nogl"); });
+    sync();
+  })();
+</script>
+<script>
+  // Lite sky: avoids GPU texture flicker. Auto-on when unplugged (Chrome/Edge Battery API); L toggles and the choice is remembered.
+  (() => {
+    const KEY = "lite-sky", body = document.body;
+    const store = { get() { try { return localStorage.getItem(KEY); } catch { return null; } },
+                    set(v) { try { localStorage.setItem(KEY, v); } catch {} } };
+    const set = on => body.classList.toggle("lite", on);
+    let manual = store.get();               // "1" | "0" | null (null = follow the battery)
+    if (manual !== null) set(manual === "1");
     if (navigator.getBattery) navigator.getBattery().then(b => {
-      const sync = () => { if (!manual) set(!b.charging); };
+      const sync = () => { if (manual === null) set(!b.charging); };
       sync(); b.addEventListener("chargingchange", sync);
     }).catch(() => {});
     addEventListener("keydown", e => {
       if (e.key.toLowerCase() !== "l" || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
-      manual = true; set(!document.body.classList.contains("lite"));
+      const on = !body.classList.contains("lite");
+      manual = on ? "1" : "0"; store.set(manual); set(on);
     });
   })();
 </script>
