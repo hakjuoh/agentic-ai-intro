@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="$lang$">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>$pagetitle$</title>
+$for(css)$
+<link rel="stylesheet" href="$css$">
+$endfor$
+</head>
+<body>
+<main class="post">
+<header class="post-header">
+<p class="byline">
+$for(author)$<span class="author">$author$</span>$sep$ <span aria-hidden="true">&middot;</span> $endfor$
+$if(date)$<span aria-hidden="true">&middot;</span> <time datetime="$date$">$date$</time>$endif$
+</p>
+<h1 class="title">$title$</h1>
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+</header>
+$body$
+</main>
+<dialog class="lightbox" aria-label="Enlarged image">
+<button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+<img alt="">
+</dialog>
+<script>
+// Click a screenshot to view it enlarged. Escape, a click, or the close button dismisses it,
+// and the left and right arrow keys step through the screenshots on the page.
+(function () {
+  var dialog = document.querySelector('.lightbox');
+  var big = dialog.querySelector('img');
+  var shots = Array.prototype.slice.call(document.querySelectorAll('figure img'));
+  var current = -1;
+
+  function show(index) {
+    current = (index + shots.length) % shots.length;
+    big.src = shots[current].currentSrc || shots[current].src;
+    big.alt = shots[current].alt;
+    if (!dialog.open) dialog.showModal();
+  }
+
+  shots.forEach(function (img, i) {
+    img.tabIndex = 0;
+    img.setAttribute('role', 'button');
+    img.setAttribute('aria-label', 'Enlarge image: ' + img.alt);
+    img.addEventListener('click', function () { show(i); });
+    img.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(i); }
+    });
+  });
+
+  dialog.addEventListener('click', function () { dialog.close(); });
+  dialog.addEventListener('keydown', function (e) {
+    if (shots.length < 2) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); }
+  });
+})();
+</script>
+</body>
+</html>

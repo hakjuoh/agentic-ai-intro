@@ -1,0 +1,278 @@
+% NOTE: Titles, years and citation counts were retrieved from Semantic Scholar
+% on 2026-10-13. Author lists are abbreviated with "and others"; venue and page
+% details were not cross-checked against the publishers' pages. Verify every
+% entry before publishing.
+%
+% Selection rule: every cited paper must have at least 1000 citations
+% (Semantic Scholar, 2026-10-13):
+%   brown2020gpt3 64595       ouyang2022instructgpt 24897   wei2022cot 22817
+%   yao2023react 12412        chen2021codex 12092           shinn2023reflexion 5958
+%   schick2023toolformer 6085 austin2021program 4765        jimenez2024swebench 4284
+%   wang2023survey 4106       roziere2023codellama 3648     wu2023autogen 2884
+%   li2022alphacode 2604      hong2023metagpt 2603          yang2024sweagent 2123
+%   xi2023rise 2132           nijkamp2023codegen 1622       qian2024chatdev 1313
+%   zheng2023judge 12053      ji2023hallucination 6237      liu2023evalplus 2355
+%   zhou2023ape 1639          huang2024selfcorrect 1300     sclar2024quantifying 1088
+%   kwon2023pagedattention 9021  zheng2024sglang 1611       chen2024frugalgpt 1106
+%
+% The rule above applies to papers. Vendor guides and the project repository
+% (anthropic2024building, openai2025practical, oh2026agentstudio) are not papers and carry no citation count. Their titles and
+% URLs were taken from the author's own slides and repository.
+
+@misc{anthropic2024building,
+  author = {{Anthropic}},
+  title  = {Building Effective Agents},
+  year   = {2024},
+  url    = {https://www.anthropic.com/engineering/building-effective-agents}
+}
+
+@misc{openai2025practical,
+  author = {{OpenAI}},
+  title  = {A Practical Guide to Building Agents},
+  year   = {2025},
+  url    = {https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf}
+}
+
+@misc{oh2026agentstudio,
+  author = {Oh, Hakju},
+  title  = {{AgentStudio}},
+  year   = {2026},
+  note   = {Private repository},
+  url    = {https://github.com/hakjuoh/AgentStudio}
+}
+
+@inproceedings{brown2020gpt3,
+  author    = {Brown, Tom B. and Mann, Benjamin and Ryder, Nick and others},
+  title     = {Language Models are Few-Shot Learners},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2020},
+  eprint    = {2005.14165},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{wei2022cot,
+  author    = {Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and others},
+  title     = {Chain-of-Thought Prompting Elicits Reasoning in Large Language Models},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2022},
+  eprint    = {2201.11903},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{ouyang2022instructgpt,
+  author    = {Ouyang, Long and Wu, Jeff and Jiang, Xu and others},
+  title     = {Training Language Models to Follow Instructions with Human Feedback},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2022},
+  eprint    = {2203.02155},
+  archivePrefix = {arXiv}
+}
+
+@misc{chen2021codex,
+  author        = {Chen, Mark and Tworek, Jerry and Jun, Heewoo and others},
+  title         = {Evaluating Large Language Models Trained on Code},
+  year          = {2021},
+  eprint        = {2107.03374},
+  archivePrefix = {arXiv}
+}
+
+@misc{austin2021program,
+  author        = {Austin, Jacob and Odena, Augustus and Nye, Maxwell and others},
+  title         = {Program Synthesis with Large Language Models},
+  year          = {2021},
+  eprint        = {2108.07732},
+  archivePrefix = {arXiv}
+}
+
+@article{li2022alphacode,
+  author  = {Li, Yujia and Choi, David and Chung, Junyoung and others},
+  title   = {Competition-Level Code Generation with {AlphaCode}},
+  journal = {{Science}},
+  year    = {2022},
+  eprint  = {2203.07814},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{nijkamp2023codegen,
+  author    = {Nijkamp, Erik and Pang, Bo and Hayashi, Hiroaki and others},
+  title     = {{CodeGen}: An Open Large Language Model for Code with Multi-Turn Program Synthesis},
+  booktitle = {{International Conference on Learning Representations (ICLR)}},
+  year      = {2023},
+  eprint    = {2203.13474},
+  archivePrefix = {arXiv}
+}
+
+@misc{roziere2023codellama,
+  author        = {Rozi{\`e}re, Baptiste and Gehring, Jonas and Gloeckle, Fabian and others},
+  title         = {Code {Llama}: Open Foundation Models for Code},
+  year          = {2023},
+  eprint        = {2308.12950},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{yao2023react,
+  author    = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  title     = {{ReAct}: Synergizing Reasoning and Acting in Language Models},
+  booktitle = {{International Conference on Learning Representations (ICLR)}},
+  year      = {2023},
+  eprint    = {2210.03629},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{schick2023toolformer,
+  author    = {Schick, Timo and Dwivedi-Yu, Jane and Dess{\`\i}, Roberto and others},
+  title     = {Toolformer: Language Models Can Teach Themselves to Use Tools},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2023},
+  eprint    = {2302.04761},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{shinn2023reflexion,
+  author    = {Shinn, Noah and Cassano, Federico and Berman, Edward and others},
+  title     = {Reflexion: Language Agents with Verbal Reinforcement Learning},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2023},
+  eprint    = {2303.11366},
+  archivePrefix = {arXiv}
+}
+
+@misc{wang2023survey,
+  author        = {Wang, Lei and Ma, Chen and Feng, Xueyang and others},
+  title         = {A Survey on Large Language Model Based Autonomous Agents},
+  year          = {2023},
+  eprint        = {2308.11432},
+  archivePrefix = {arXiv}
+}
+
+@misc{xi2023rise,
+  author        = {Xi, Zhiheng and Chen, Wenxiang and Guo, Xin and others},
+  title         = {The Rise and Potential of Large Language Model Based Agents: A Survey},
+  year          = {2023},
+  eprint        = {2309.07864},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{jimenez2024swebench,
+  author    = {Jimenez, Carlos E. and Yang, John and Wettig, Alexander and others},
+  title     = {{SWE-bench}: Can Language Models Resolve Real-World {GitHub} Issues?},
+  booktitle = {{International Conference on Learning Representations (ICLR)}},
+  year      = {2024},
+  eprint    = {2310.06770},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{yang2024sweagent,
+  author    = {Yang, John and Jimenez, Carlos E. and Wettig, Alexander and others},
+  title     = {{SWE-agent}: Agent-Computer Interfaces Enable Automated Software Engineering},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2024},
+  eprint    = {2405.15793},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{qian2024chatdev,
+  author    = {Qian, Chen and Liu, Wei and Liu, Hongzhang and others},
+  title     = {{ChatDev}: Communicative Agents for Software Development},
+  booktitle = {{Proceedings of the Annual Meeting of the Association for Computational Linguistics (ACL)}},
+  year      = {2024},
+  eprint    = {2307.07924},
+  archivePrefix = {arXiv}
+}
+
+@misc{hong2023metagpt,
+  author        = {Hong, Sirui and Zhuge, Mingchen and Chen, Jonathan and others},
+  title         = {{MetaGPT}: Meta Programming for a Multi-Agent Collaborative Framework},
+  year          = {2023},
+  eprint        = {2308.00352},
+  archivePrefix = {arXiv}
+}
+
+@misc{wu2023autogen,
+  author        = {Wu, Qingyun and Bansal, Gagan and Zhang, Jieyu and others},
+  title         = {{AutoGen}: Enabling Next-Gen {LLM} Applications via Multi-Agent Conversation},
+  year          = {2023},
+  eprint        = {2308.08155},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{sclar2024quantifying,
+  author    = {Sclar, Melanie and Choi, Yejin and Tsvetkov, Yulia and Suhr, Alane},
+  title     = {Quantifying Language Models' Sensitivity to Spurious Features in Prompt Design or: How {I} Learned to Start Worrying about Prompt Formatting},
+  booktitle = {{International Conference on Learning Representations (ICLR)}},
+  year      = {2024},
+  eprint    = {2310.11324},
+  archivePrefix = {arXiv}
+}
+
+@article{ji2023hallucination,
+  author  = {Ji, Ziwei and Lee, Nayeon and Frieske, Rita and others},
+  title   = {Survey of Hallucination in Natural Language Generation},
+  journal = {{ACM Computing Surveys}},
+  year    = {2023},
+  eprint  = {2202.03629},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{zheng2023judge,
+  author    = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and others},
+  title     = {Judging {LLM}-as-a-Judge with {MT-Bench} and Chatbot Arena},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2023},
+  eprint    = {2306.05685},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{liu2023evalplus,
+  author    = {Liu, Jiawei and Xia, Chunqiu Steven and Wang, Yuyao and Zhang, Lingming},
+  title     = {Is Your Code Generated by {ChatGPT} Really Correct? Rigorous Evaluation of Large Language Models for Code Generation},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2023},
+  eprint    = {2305.01210},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{huang2024selfcorrect,
+  author    = {Huang, Jie and Chen, Xinyun and Mishra, Swaroop and Zheng, Huaixiu Steven and Yu, Adams Wei and Song, Xinying and Zhou, Denny},
+  title     = {Large Language Models Cannot Self-Correct Reasoning Yet},
+  booktitle = {{International Conference on Learning Representations (ICLR)}},
+  year      = {2024},
+  eprint    = {2310.01798},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{zhou2023ape,
+  author    = {Zhou, Yongchao and Muresanu, Andrei Ioan and Han, Ziwen and Paster, Keiran and Pitis, Silviu and Chan, Harris and Ba, Jimmy},
+  title     = {Large Language Models Are Human-Level Prompt Engineers},
+  booktitle = {{International Conference on Learning Representations (ICLR)}},
+  year      = {2023},
+  eprint    = {2211.01910},
+  archivePrefix = {arXiv}
+}
+
+@article{chen2024frugalgpt,
+  author  = {Chen, Lingjiao and Zaharia, Matei and Zou, James},
+  title   = {{FrugalGPT}: How to Use Large Language Models While Reducing Cost and Improving Performance},
+  journal = {{Transactions on Machine Learning Research}},
+  year    = {2024},
+  eprint  = {2305.05176},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{kwon2023pagedattention,
+  author    = {Kwon, Woosuk and Li, Zhuohan and Zhuang, Siyuan and others},
+  title     = {Efficient Memory Management for Large Language Model Serving with {PagedAttention}},
+  booktitle = {{Proceedings of the ACM Symposium on Operating Systems Principles (SOSP)}},
+  year      = {2023},
+  eprint    = {2309.06180},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{zheng2024sglang,
+  author    = {Zheng, Lianmin and Yin, Liangsheng and Xie, Zhiqiang and others},
+  title     = {{SGLang}: Efficient Execution of Structured Language Model Programs},
+  booktitle = {{Advances in Neural Information Processing Systems (NeurIPS)}},
+  year      = {2024},
+  eprint    = {2312.07104},
+  archivePrefix = {arXiv}
+}
